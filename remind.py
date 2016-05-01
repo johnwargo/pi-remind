@@ -8,7 +8,8 @@
      HAT (an 8x8 matrix of bright, tri-colored LEDs) to display an obnoxious reminder at 10 minutes, 5 miniutes and
      2 minutes.
 
-     Example code for Unicorn HAT: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
+    Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
+    Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
 ********************************************************************************************************************'''
 from __future__ import print_function
 
@@ -50,6 +51,7 @@ def flash_lights_orange(flashCount, delay, red, green, blue):
 
 
 def get_credentials():
+    # taken from https://developers.google.com/google-apps/calendar/quickstart/python
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
@@ -69,6 +71,7 @@ def get_credentials():
 
 
 def getNextEvent(searchLimit):
+    # modified from https://developers.google.com/google-apps/calendar/quickstart/python
     print('Getting next event')
     # get all of the events on the calendar from now through 10 minutes from now
     now = datetime.datetime.utcnow()
