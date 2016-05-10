@@ -116,11 +116,16 @@ def getNextEvent(searchLimit):
         for event in eventList:
             # we only care about events that have a start time
             start = event['start'].get('dateTime')
+            # return the first event that has a start time
             if start:
                 print("Event ", start, event['summary'])
                 return event
             else:
+                # otherwise skip the event
                 print("Skipping " + event['summary'])
+        # if we got this far and haven't returned anything, then there's no appointments in the specified time
+        # window. So, return None
+        return None
 
 
 def main():
