@@ -24,7 +24,7 @@ pip install oauth2client
  
 Install google's api client - https://developers.google.com/api-client-library/python/start/installation
 
-
+Place your Google Calendar API `client_secret.json` file in the project folder. You'll need it to authorize the app to access your Google Calendar.
 
 ***
 

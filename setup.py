@@ -3,8 +3,8 @@ from distutils.core import setup
 setup(
     name='pi_reminder',
     version='0.1',
-    packages=['http2lib, oauth2client, unicornhat'],
-    url='',
+    packages=['google-api-python-client, http2lib, oauth2client, unicornhat'],
+    url='https://github.com/johnwargo/pi_remind',
     license='MIT',
     author='John M. Wargo',
     author_email='john@johnwargo.com',

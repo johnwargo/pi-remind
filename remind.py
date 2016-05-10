@@ -20,7 +20,7 @@ import time
 
 import httplib2
 import oauth2client
-import unicornhat as unicorn
+import unicornhat as lights
 from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
@@ -33,20 +33,38 @@ except ImportError:
     flags = None
 
 # If modifying these scopes, delete your previously saved credentials
-# at ~/.credentials/calendar-python-quickstart.json
+# at ~/.credentials/client_secret.json
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Google Calendar API Python Quickstart'
+APPLICATION_NAME = 'Pi Remind'
+
+
+def show_activity_light(status):
+    global currentActivityLight
+
+    # Turning on or off?
+    if status:
+        # on
+        if currentActivityLight == 7:
+            currentActivityLight = -1
+        # increment the current light
+        currentActivityLight += 1
+        # set the pixel
+        lights.set_pixel(currentActivityLight, 0, 0, 128, 0)
+        # show the pixel
+        lights.show()
+    else:
+        lights.off()
 
 
 def flash_lights_orange(flashCount, delay, red, green, blue):
     for index in range(flashCount):
         for y in range(8):
             for x in range(8):
-                unicorn.set_pixel(x, y, red, green, blue)
-                unicorn.show()
+                lights.set_pixel(x, y, red, green, blue)
+                lights.show()
         time.sleep(delay)
-        unicorn.off()
+        lights.off()
         time.sleep(delay)
 
 
@@ -76,6 +94,7 @@ def getNextEvent(searchLimit):
     # get all of the events on the calendar from now through 10 minutes from now
     now = datetime.datetime.utcnow()
     then = now + datetime.timedelta(minutes=searchLimit)
+    show_activity_light(True)
     # ask Google for the calendar entries
     eventsResult = service.events().list(
         calendarId='primary',
@@ -84,6 +103,7 @@ def getNextEvent(searchLimit):
         # maxResults=10,
         singleEvents=True,
         orderBy='startTime').execute()
+    show_activity_light(False)
     # Get the event list
     eventList = eventsResult.get('items', [])
     # did we get a return value?
@@ -98,8 +118,6 @@ def getNextEvent(searchLimit):
             start = event['start'].get('dateTime')
             if start:
                 print("Event ", start, event['summary'])
-                ts = time.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00')
-                print("Start: ", ts)
                 return event
             else:
                 print("Skipping " + event['summary'])
@@ -108,7 +126,7 @@ def getNextEvent(searchLimit):
 def main():
     print("Entering main()")
 
-    flash_lights_orange(2, 0.25, 255, 165, 0)
+    flash_lights_orange(1, 0.25, 255, 165, 0)
 
     # initialize the lastEventID to an invalid value to start
     lastEventID = -1
@@ -120,32 +138,64 @@ def main():
         lastMinute = 59
     else:
         lastMinute -= 1
-    # print("Last minute: ", lastMinute)
 
-    # continuous loop to process things forever
+    # infinite loop to process continuously check Google Calendar for future entries
     while 1:
-        # todo: check the last minute
+        # calculate current minute
+        # print("Last minute: ", lastMinute)
+        currentMinute = datetime.datetime.now().minute
+        # print("Current minute: ", currentMinute)
 
-        # get the next calendar event (within the specified time limit [in minutes])
-        nextEvent = getNextEvent(10)
-        # do we get an event?
-        if nextEvent != None:
-            print("We have an event!")
-            # todo: calculate the time to the next appointment
-            # how far is the appointment from now?
-            # minLimit = nextEvent - datetime.datetime.now().minute
-            # print("Next appointment in ", minLimit, " minutes")
+        # is it the same as the last minute?
+        if currentMinute != lastMinute:
+            # reset last minute
+            lastMinute = currentMinute
+            # we've moved a minute
+            # get the next calendar event (within the specified time limit [in minutes])
+            nextEvent = getNextEvent(10)
+            # do we get an event?
+            if nextEvent != None:
+                # apparently we did. Woohoo!
+                print("\nWe have an event!")
 
-        time.sleep(10)
+                # what time is it now?
+                currentTime = datetime.datetime.now()
+                print("Current time: ", currentTime)
+
+                # When does the appointment start?
+                # Pull the start dateTime as a string from the event object
+                es = nextEvent['start'].get('dateTime')
+                # Convert the string it into a Python dateTime object so we can do math on it
+                eventStart = datetime.datetime.strptime(es, '%Y-%m-%dT%H:%M:%S-04:00')
+                print("Start time: ", eventStart)
+
+                # figure out how many minutes to the appointment
+                timeDelta = eventStart - currentTime
+                # Round to the nearest minute
+                numMinutes = timeDelta.total_seconds() // 60
+                print("Next appointment in ", numMinutes, " minutes")
+
+                # Has the appointment started yet?
+                # if currentTime < eventStart:
+
+            time.sleep(5)
+
     # this should never happen...
     print("Leaving main()")
 
+
+# the app flashes a green light in the first row every time it connects to Google to check the calendar.
+# The LED increments every time until it gets to the other side then starts over at the beginning again.
+# the currentActivityLight variable keeps track of which light lit last. At start it's at -1 and goes from there.
+currentActivityLight = -1
+# set a specific brightness level for the Pimoroni Unicorn HAT, otherwise it's pretty bright
+# comment out the line below to see what the default looks like
+lights.brightness(1)
 
 # initialize the Google Calendar API stuff
 credentials = get_credentials()
 http = credentials.authorize(httplib2.Http())
 service = discovery.build('calendar', 'v3', http=http)
-
 # now see what we're supposed to do next
 if __name__ == '__main__':
     try:
