@@ -43,7 +43,7 @@ SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Pi Reminder'
 CALENDAR_ID = 'primary'
-HASHES = '######################################'
+HASHES = '########################################'
 
 
 def show_activity_light(status):
@@ -80,7 +80,7 @@ def get_credentials():
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
-        print('Creating ', credential_dir)
+        print('Creating', credential_dir)
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir, 'pi_remind.json')
     store = oauth2client.file.Storage(credential_path)
@@ -92,7 +92,7 @@ def get_credentials():
             credentials = tools.run_flow(flow, store, flags)
         else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
-        print('Storing credentials to ' + credential_path)
+        print('Storing credentials to', credential_path)
     return credentials
 
 
@@ -124,7 +124,7 @@ def get_next_event(search_limit):
     else:
         # what time is it now?
         current_time = datetime.datetime.now()
-        # we got a list, loop through them.
+        # loop through the events in the list
         for event in event_list:
             # we only care about events that have a start time
             start = event['start'].get('dateTime')
@@ -137,8 +137,8 @@ def get_next_event(search_limit):
                 # does the event start in the future?
                 if current_time < event_start:
                     # no? So we can use it
-                    print('Found event: ', event['summary'])
-                    print('Event starts: ', start)
+                    print('Found event:', event['summary'])
+                    print('Event starts:', start)
                     # figure out how soon it starts
                     time_delta = event_start - current_time
                     # Round to the nearest minute and return with the object
@@ -178,7 +178,10 @@ def main():
             # do we get an event?
             if next_event != None:
                 num_minutes = next_event['num_minutes']
-                print('Starts in ', num_minutes, ' minute(s)\n')
+                if num_minutes != 1:
+                    print('Starts in', num_minutes, 'minutes\n')
+                else:
+                    print('Starts in 1.0 minute\n')
                 # is the appointment between 10 and 5 minutes from now?
                 if num_minutes >= 5:
                     # Flash the lights in white
@@ -200,8 +203,8 @@ def main():
 
 print('\n')
 print(HASHES)
-print(' Pi Remind')
-print(' By John M. Wargo (www.johnwargo.com)')
+print('# Pi Remind                            #')
+print('# By John M. Wargo (www.johnwargo.com) #')
 print(HASHES)
 
 # The app flashes a green light in the first row every time it connects to Google to check the calendar.
