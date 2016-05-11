@@ -14,6 +14,7 @@
 ********************************************************************************************************************'''
 # todo: Add support for snooze button
 # todo: Add support for cancel button
+# todo: Enforce business day start and end 8 AM to 6 PM?
 
 from __future__ import print_function
 
@@ -97,21 +98,23 @@ def get_next_event(search_limit):
     # get all of the events on the calendar from now through 10 minutes from now
     now = datetime.datetime.utcnow()
     then = now + datetime.timedelta(minutes=search_limit)
+    # turn on a sequential green LED to show that you're requesting data from the Google Calendar API
     show_activity_light(True)
     # ask Google for the calendar entries
     events_result = service.events().list(
+        # get all of them between now and 10 minutes from now
         calendarId='primary',
         timeMin=now.isoformat() + 'Z',
         timeMax=then.isoformat() + 'Z',
-        # maxResults=10,
         singleEvents=True,
         orderBy='startTime').execute()
+    # turn off the green LED so you'll know data was returned from the Google calendar API
     show_activity_light(False)
     # Get the event list
     event_list = events_result.get('items', [])
     # did we get a return value?
     if not event_list:
-        # no? Then no upcoming events at all.
+        # no? Then no upcoming events at all, so nothing to do right now
         print(datetime.datetime.now(), "No entries returned")
         return None
     else:
@@ -127,40 +130,33 @@ def get_next_event(search_limit):
                 # otherwise skip the event
                 print("Skipping " + event['summary'])
         # if we got this far and haven't returned anything, then there's no appointments in the specified time
-        # window. So, return None
+        # range, so return None
         return None
 
 
 def main():
     print("Entering main()")
 
+    # blink all the LEDs white to let the user know the hardware is working
     flash_all_lights(1, 0.25, 255, 165, 0)
-
-    # initialize the last_event_id to an invalid value to start
-    last_event_id = -1
 
     # initialize the lastMinute variable to the current time to start
     last_minute = datetime.datetime.now().minute
-    # when starting, use the previous minute as lastMinute
+    # on startup, just use the previous minute as lastMinute
     if last_minute == 0:
         last_minute = 59
     else:
         last_minute -= 1
 
-    # infinite loop to process continuously check Google Calendar for future entries
+    # infinite loop to continuously check Google Calendar for future entries
     while 1:
-        # calculate current minute
-        # print("Last minute: ", lastMinute)
+        # get the current minute
         current_minute = datetime.datetime.now().minute
-        # print("Current minute: ", current_minute)
-
-        # todo: Enforce business day start and end 8 AM to 6 PM?
-
-        # is it the same as the last minute?
+        # is it the same minute as the last time we checked?
         if current_minute != last_minute:
-            # reset last minute
+            # reset last_minute to the current_minute, of course
             last_minute = current_minute
-            # we've moved a minute
+            # we've moved a minute, so we have work to do
             # get the next calendar event (within the specified time limit [in minutes])
             next_event = get_next_event(10)
             # do we get an event?
@@ -183,10 +179,9 @@ def main():
                 time_delta = event_start - current_time
                 # Round to the nearest minute
                 num_minutes = time_delta.total_seconds() // 60
-                print("Next appointment in ", num_minutes, " minutes")
-
                 # Has the appointment started yet?
                 if current_time < event_start:
+                    print("Next appointment in ", num_minutes, " minutes")
                     # is the appointment between 10 and 5 minutes from now?
                     if num_minutes >= 5:
                         # Flash the lights in white
@@ -195,14 +190,20 @@ def main():
                     elif num_minutes > 2:
                         # Flash the lights yellow
                         flash_all_lights(2, 0.25, 255, 255, 0)
-                    # hmmm, less than 2 minutes, big red alarm!
+                    # hmmm, less than 2 minutes, almost time to start!
                     else:
                         # flash the lights red
                         flash_all_lights(3, 0.25, 255, 0, 0)
-            # wait a few (5) seconds then check again
+                else:
+                    # nothing to do here now, eventually we'll want to flash red until the user acknowledges that
+                    # they're aware of the meeting (by pushing a physical button).
+                    # That way, it will get situations where you come back to the room after the appointment you've
+                    # missed has already started
+                    print("Event has already started")
+            # wait a few (5, ya, I know, not a few) seconds then check again
             time.sleep(5)
 
-    # this should never happen...
+    # this should never happen since the above is an infinite loop
     print("Leaving main()")
 
 
