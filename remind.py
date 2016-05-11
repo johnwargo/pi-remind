@@ -37,10 +37,13 @@ try:
 except ImportError:
     flags = None
 
-# If modifying these scopes, delete your previously saved credentials at ~/.credentials/client_secret.json
+# Google says: If modifying these scopes, delete your previously saved credentials at ~/.credentials/client_secret.json
+# JMW says: On the pi, it's in /root/.credentials/
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Pi Remind'
+APPLICATION_NAME = 'Pi Reminder'
+CALENDAR_ID = 'primary'
+HASHES = '######################################'
 
 
 def show_activity_light(status):
@@ -77,6 +80,7 @@ def get_credentials():
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
+        print('Creating ', credential_dir)
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir, 'pi_remind.json')
     store = oauth2client.file.Storage(credential_path)
@@ -94,16 +98,16 @@ def get_credentials():
 
 def get_next_event(search_limit):
     # modified from https://developers.google.com/google-apps/calendar/quickstart/python
-    print('Getting next event')
     # get all of the events on the calendar from now through 10 minutes from now
     now = datetime.datetime.utcnow()
+    print(now, 'Getting next event')
     then = now + datetime.timedelta(minutes=search_limit)
     # turn on a sequential green LED to show that you're requesting data from the Google Calendar API
     show_activity_light(True)
     # ask Google for the calendar entries
     events_result = service.events().list(
         # get all of them between now and 10 minutes from now
-        calendarId='primary',
+        calendarId=CALENDAR_ID,
         timeMin=now.isoformat() + 'Z',
         timeMax=then.isoformat() + 'Z',
         singleEvents=True,
@@ -115,31 +119,43 @@ def get_next_event(search_limit):
     # did we get a return value?
     if not event_list:
         # no? Then no upcoming events at all, so nothing to do right now
-        print(datetime.datetime.now(), "No entries returned")
+        print(datetime.datetime.now(), 'No entries returned')
         return None
     else:
+        # what time is it now?
+        current_time = datetime.datetime.now()
         # we got a list, loop through them.
         for event in event_list:
             # we only care about events that have a start time
             start = event['start'].get('dateTime')
             # return the first event that has a start time
+            # so, first, do we have a start time for this event?
             if start:
-                print("Event ", start, event['summary'])
-                return event
-            else:
-                # otherwise skip the event
-                print("Skipping " + event['summary'])
+                # When does the appointment start?
+                # Convert the string it into a Python dateTime object so we can do math on it
+                event_start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00')
+                # does the event start in the future?
+                if current_time < event_start:
+                    # no? So we can use it
+                    print('Found event: ', event['summary'])
+                    print('Event starts: ', start)
+                    # figure out how soon it starts
+                    time_delta = event_start - current_time
+                    # Round to the nearest minute and return with the object
+                    event['num_minutes'] = time_delta.total_seconds() // 60
+                    return event
+                    #     else:
+                    #         # yes? Then skip it
+                    #         print('Skipping ' + event['summary'], ' (already started)')
+                    # else:
+                    #     # yes? Then skip it
+                    #     print('Skipping ' + event['summary'], ' (no start time)')
         # if we got this far and haven't returned anything, then there's no appointments in the specified time
-        # range, so return None
+        # range, so...
         return None
 
 
 def main():
-    print("Entering main()")
-
-    # blink all the LEDs white to let the user know the hardware is working
-    flash_all_lights(1, 0.25, 255, 165, 0)
-
     # initialize the lastMinute variable to the current time to start
     last_minute = datetime.datetime.now().minute
     # on startup, just use the previous minute as lastMinute
@@ -161,51 +177,32 @@ def main():
             next_event = get_next_event(10)
             # do we get an event?
             if next_event != None:
-                # apparently we did. Woohoo!
-                print("\nWe have an event!")
-
-                # what time is it now?
-                current_time = datetime.datetime.now()
-                print("Current time: ", current_time)
-
-                # When does the appointment start?
-                # Pull the start dateTime as a string from the event object
-                es = next_event['start'].get('dateTime')
-                # Convert the string it into a Python dateTime object so we can do math on it
-                event_start = datetime.datetime.strptime(es, '%Y-%m-%dT%H:%M:%S-04:00')
-                print("Start time: ", event_start)
-
-                # Figure out how many minutes to the appointment
-                time_delta = event_start - current_time
-                # Round to the nearest minute
-                num_minutes = time_delta.total_seconds() // 60
-                # Has the appointment started yet?
-                if current_time < event_start:
-                    print("Next appointment in ", num_minutes, " minutes")
-                    # is the appointment between 10 and 5 minutes from now?
-                    if num_minutes >= 5:
-                        # Flash the lights in white
-                        flash_all_lights(1, 0.25, 255, 255, 255)
-                    # is the appointment less than 5 minutes but more than 2 minutes from now?
-                    elif num_minutes > 2:
-                        # Flash the lights yellow
-                        flash_all_lights(2, 0.25, 255, 255, 0)
-                    # hmmm, less than 2 minutes, almost time to start!
-                    else:
-                        # flash the lights red
-                        flash_all_lights(3, 0.25, 255, 0, 0)
+                num_minutes = next_event['num_minutes']
+                print('Starts in ', num_minutes, ' minute(s)\n')
+                # is the appointment between 10 and 5 minutes from now?
+                if num_minutes >= 5:
+                    # Flash the lights in white
+                    flash_all_lights(1, 0.25, 255, 255, 255)
+                # is the appointment less than 5 minutes but more than 2 minutes from now?
+                elif num_minutes > 2:
+                    # Flash the lights yellow
+                    flash_all_lights(2, 0.25, 255, 255, 0)
+                # hmmm, less than 2 minutes, almost time to start!
                 else:
-                    # nothing to do here now, eventually we'll want to flash red until the user acknowledges that
-                    # they're aware of the meeting (by pushing a physical button).
-                    # That way, it will get situations where you come back to the room after the appointment you've
-                    # missed has already started
-                    print("Event has already started")
+                    # flash the lights red
+                    flash_all_lights(3, 0.25, 255, 0, 0)
             # wait a few (5, ya, I know, not a few) seconds then check again
             time.sleep(5)
 
     # this should never happen since the above is an infinite loop
-    print("Leaving main()")
+    print('Leaving main()')
 
+
+print('\n')
+print(HASHES)
+print(' Pi Remind')
+print(' By John M. Wargo (www.johnwargo.com)')
+print(HASHES)
 
 # The app flashes a green light in the first row every time it connects to Google to check the calendar.
 # The LED increments every time until it gets to the other side then starts over at the beginning again.
@@ -215,14 +212,21 @@ current_activity_light = -1
 # Comment out the line below to see what the default looks like.
 lights.brightness(1)
 
+# blink all the LEDs green to let the user know the hardware is working
+flash_all_lights(1, 0.25, 0, 128, 0)
+
 # Initialize the Google Calendar API stuff
 credentials = get_credentials()
 http = credentials.authorize(httplib2.Http())
 service = discovery.build('calendar', 'v3', http=http)
+
+print('\nApplication initialized\n')
+
 # Now see what we're supposed to do next
 if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print >> sys.stderr, '\nExiting by user request.\n'
+        # print >> sys.stderr, '\nExiting by user request.\n'
+        print('\nExiting by user request.\n')
         sys.exit(0)
