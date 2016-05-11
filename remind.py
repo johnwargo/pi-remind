@@ -6,8 +6,8 @@
 
     This application connects to a Google Calendar and determines whether there are any appointments in the next
     few minutes and flashes some LEDs if there are. The project uses a Raspberry Pi 2 device with a Pimoroni
-    Unicorn HAT (an 8x8 matrix of bright, tri-colored LEDs) to display an obnoxious reminder at 10 minutes,
-    5 minutes and 2 minutes.
+    Unicorn HAT (an 8x8 matrix of bright, multi-colored LEDs) to display an obnoxious reminder every minute, changing
+    color at 10 minutes (white), 5 minutes (yellow) and 2 minutes (red).
 
     Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
