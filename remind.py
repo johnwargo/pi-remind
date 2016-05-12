@@ -99,21 +99,32 @@ def get_credentials():
 def get_next_event(search_limit):
     # modified from https://developers.google.com/google-apps/calendar/quickstart/python
     # get all of the events on the calendar from now through 10 minutes from now
+    print(datetime.datetime.now(), 'Getting next event')
+    # this 'now' is in a different format (UTC)
     now = datetime.datetime.utcnow()
-    print(now, 'Getting next event')
     then = now + datetime.timedelta(minutes=search_limit)
     # turn on a sequential green LED to show that you're requesting data from the Google Calendar API
     show_activity_light(True)
-    # ask Google for the calendar entries
-    events_result = service.events().list(
-        # get all of them between now and 10 minutes from now
-        calendarId=CALENDAR_ID,
-        timeMin=now.isoformat() + 'Z',
-        timeMax=then.isoformat() + 'Z',
-        singleEvents=True,
-        orderBy='startTime').execute()
-    # turn off the green LED so you'll know data was returned from the Google calendar API
-    show_activity_light(False)
+    # todo: Need to figure out how to recover from network errors
+    try:
+        # ask Google for the calendar entries
+        events_result = service.events().list(
+            # get all of them between now and 10 minutes from now
+            calendarId=CALENDAR_ID,
+            timeMin=now.isoformat() + 'Z',
+            timeMax=then.isoformat() + 'Z',
+            singleEvents=True,
+            orderBy='startTime').execute()
+        # turn off the green LED so you'll know data was returned from the Google calendar API
+        show_activity_light(False)
+    except Exception:
+        # todo: Need to continue on, not exit when we have an error
+        # well, something went wrong
+        # not much we can do here except to skip this attempt and try again later
+        e = sys.exc_info()[0]
+        print('Error connecting to calendar:', e)
+        # light up the array with red LEDs to indicate a problem
+        flash_all_lights(1, 2, 255, 0, 0)
     # Get the event list
     event_list = events_result.get('items', [])
     # did we get a return value?
