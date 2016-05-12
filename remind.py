@@ -15,6 +15,7 @@
 # todo: Add support for snooze button
 # todo: Add support for cancel button
 # todo: Enforce business day start and end 8 AM to 6 PM?
+# todo: On network connection error, increase delay between checks to minimize repeated warnings
 
 from __future__ import print_function
 
@@ -105,7 +106,6 @@ def get_next_event(search_limit):
     then = now + datetime.timedelta(minutes=search_limit)
     # turn on a sequential green LED to show that you're requesting data from the Google Calendar API
     show_activity_light(True)
-    # todo: Need to figure out how to recover from network errors
     try:
         # ask Google for the calendar entries
         events_result = service.events().list(
@@ -117,53 +117,45 @@ def get_next_event(search_limit):
             orderBy='startTime').execute()
         # turn off the green LED so you'll know data was returned from the Google calendar API
         show_activity_light(False)
-    except Exception:
-        # todo: Need to continue on, not exit when we have an error
+        # Get the event list
+        event_list = events_result.get('items', [])
+        # did we get a return value?
+        if not event_list:
+            # no? Then no upcoming events at all, so nothing to do right now
+            print(datetime.datetime.now(), 'No entries returned')
+            return None
+        else:
+            # what time is it now?
+            current_time = datetime.datetime.now()
+            # loop through the events in the list
+            for event in event_list:
+                # we only care about events that have a start time
+                start = event['start'].get('dateTime')
+                # return the first event that has a start time
+                # so, first, do we have a start time for this event?
+                if start:
+                    # When does the appointment start?
+                    # Convert the string it into a Python dateTime object so we can do math on it
+                    event_start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00')
+                    # does the event start in the future?
+                    if current_time < event_start:
+                        # no? So we can use it
+                        print('Found event:', event['summary'])
+                        print('Event starts:', start)
+                        # figure out how soon it starts
+                        time_delta = event_start - current_time
+                        # Round to the nearest minute and return with the object
+                        event['num_minutes'] = time_delta.total_seconds() // 60
+                        return event
+    except:
         # well, something went wrong
-        # not much we can do here except to skip this attempt and try again later
-        e = sys.exc_info()[0]
-        print('Error connecting to calendar:', e)
         # light up the array with red LEDs to indicate a problem
         flash_all_lights(1, 2, 255, 0, 0)
-    # Get the event list
-    event_list = events_result.get('items', [])
-    # did we get a return value?
-    if not event_list:
-        # no? Then no upcoming events at all, so nothing to do right now
-        print(datetime.datetime.now(), 'No entries returned')
-        return None
-    else:
-        # what time is it now?
-        current_time = datetime.datetime.now()
-        # loop through the events in the list
-        for event in event_list:
-            # we only care about events that have a start time
-            start = event['start'].get('dateTime')
-            # return the first event that has a start time
-            # so, first, do we have a start time for this event?
-            if start:
-                # When does the appointment start?
-                # Convert the string it into a Python dateTime object so we can do math on it
-                event_start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00')
-                # does the event start in the future?
-                if current_time < event_start:
-                    # no? So we can use it
-                    print('Found event:', event['summary'])
-                    print('Event starts:', start)
-                    # figure out how soon it starts
-                    time_delta = event_start - current_time
-                    # Round to the nearest minute and return with the object
-                    event['num_minutes'] = time_delta.total_seconds() // 60
-                    return event
-                    #     else:
-                    #         # yes? Then skip it
-                    #         print('Skipping ' + event['summary'], ' (already started)')
-                    # else:
-                    #     # yes? Then skip it
-                    #     print('Skipping ' + event['summary'], ' (no start time)')
-        # if we got this far and haven't returned anything, then there's no appointments in the specified time
-        # range, so...
-        return None
+        # not much else we can do here except to skip this attempt and try again later
+        print('Error connecting to calendar:', sys.exc_info()[0], '\n')
+    # if we got this far and haven't returned anything, then there's no appointments in the specified time
+    # range, or we had an error, so...
+    return None
 
 
 def main():
@@ -187,10 +179,10 @@ def main():
             # get the next calendar event (within the specified time limit [in minutes])
             next_event = get_next_event(10)
             # do we get an event?
-            if next_event != None:
+            if next_event is not None:
                 num_minutes = next_event['num_minutes']
                 if num_minutes != 1:
-                    print('Starts in', num_minutes, 'minutes\n')
+                    print('Starts in', int(num_minutes), 'minutes\n')
                 else:
                     print('Starts in 1.0 minute\n')
                 # is the appointment between 10 and 5 minutes from now?
@@ -205,8 +197,9 @@ def main():
                 else:
                     # flash the lights red
                     flash_all_lights(3, 0.25, 255, 0, 0)
-            # wait a few (5, ya, I know, not a few) seconds then check again
-            time.sleep(5)
+        # wait a second then check again
+        # You can always change the value below to check less often
+        time.sleep(1)
 
     # this should never happen since the above is an infinite loop
     print('Leaving main()')
