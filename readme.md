@@ -12,10 +12,10 @@ Required Components
 ==================
 This project uses the following components:
 
-+ [Raspberry Pi](https://www.raspberrypi.org/)
-+ [Raspberry Pi Power Supply](http://www.amazon.com/CanaKit-Raspberry-Supply-Adapter-Charger/dp/B00MARDJZ4)
++ Raspberry Pi - I used a [Raspberry Pi 2 Model B](https://www.raspberrypi.org/), but any Pi will work.
++ Power Supply - [CanaKit 5V 2.5A Raspberry Pi 3 Power Supply / Adapter / Charger (UL Listed)](http://www.amazon.com/CanaKit-Raspberry-Supply-Adapter-Charger/dp/B00MARDJZ4).
 + [Pimoroni Unicorn HAT](https://shop.pimoroni.com/products/unicorn-hat)
-+ [Raspberry Pi case](https://www.adafruit.com/products/2258)
++ Raspberry Pi case - [Adafruit Raspberry Pi B+ / Pi 2 / Pi 3 Case - Smoke Base - w/ Clear Top](https://www.adafruit.com/products/2258)
 
 Raspberry Pi Setup
 ==================
