@@ -7,24 +7,47 @@ The project uses a network connected Raspberry Pi and a [Pimoroni Unicorn HAT](h
 * White @ 10 minutes
 * Yellow @ 5 minutes
 * Red @ 2 minutes
-* Flashing Red @ 0 minutes and beyond
 
-User presses a button to silence the current alert. Long press to cancel reminder completely 
+Required Components
+==================
+This project uses the following components:
 
-If there's no appointment on the calendar immediately before the next appointment, perhaps we can add a speaker or buzzer to the system and have it make an audible notification as well. Or, perhaps add a physical switch to enable/disable this feature.
-  
-Optionally, have the system send a text message reminder as well (using Twilio).
++ [Raspberry Pi](https://www.raspberrypi.org/)
++ [Raspberry Pi Power Supply](http://www.amazon.com/CanaKit-Raspberry-Supply-Adapter-Charger/dp/B00MARDJZ4)
++ [Pimoroni Unicorn HAT](https://shop.pimoroni.com/products/unicorn-hat)
++ [Raspberry Pi case](https://www.adafruit.com/products/2258)
 
-Installation
-============
+Raspberry Pi Setup
+==================
+Attach the Pimoroni Unicorn HAT to the Raspberry Pi device
+Put the Pi into a case
+Plug it in
+Optionally: assign a static IP address to the Pi.
 
-pip install http2lib
-
-pip install oauth2client
- 
-Install google's api client - https://developers.google.com/api-client-library/python/start/installation
+Project Setup
+==================
+Before you begin, you must first setup an account with Google in order to be able to execute the Google Calendar APIs used in this project. So, go here and do some stuff:
 
 Place your Google Calendar API `client_secret.json` file in the project folder. You'll need it to authorize the app to access your Google Calendar.
+
+Installation
+==================
+
+Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat):
+basically opening a terminal window and executing the following command:
+
+    curl -sS get.pimoroni.com/unicornhat | bash
+
+Install google's api client - https://developers.google.com/api-client-library/python/start/installation
+
+    sudo pip install --upgrade google-api-python-client
+
+The OAUTH and HTTP libraries should install automatically when the Google Calendar APIs install, but if not, you can install them using the following commands:
+
+    sudo pip install httplib2
+
+    sudo pip install oauth2client
+
 
 ***
 

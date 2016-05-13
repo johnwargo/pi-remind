@@ -44,6 +44,7 @@ SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Pi Reminder'
 CALENDAR_ID = 'primary'
+HASH = '#'
 HASHES = '########################################'
 
 
@@ -198,7 +199,7 @@ def main():
                     # flash the lights red
                     flash_all_lights(3, 0.25, 255, 0, 0)
         # wait a second then check again
-        # You can always change the value below to check less often
+        # You can always increase the sleep value below to check less often
         time.sleep(1)
 
     # this should never happen since the above is an infinite loop
@@ -207,8 +208,8 @@ def main():
 
 print('\n')
 print(HASHES)
-print('# Pi Remind                            #')
-print('# By John M. Wargo (www.johnwargo.com) #')
+print(HASH, 'Pi Remind                           ', HASH)
+print(HASH, 'By John M. Wargo (www.johnwargo.com)', HASH)
 print(HASHES)
 
 # The app flashes a green light in the first row every time it connects to Google to check the calendar.
@@ -234,6 +235,5 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        # print >> sys.stderr, '\nExiting by user request.\n'
-        print('\nExiting by user request.\n')
+        print('\nExiting application\n')
         sys.exit(0)
