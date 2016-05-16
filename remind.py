@@ -16,6 +16,7 @@
 # todo: Add support for cancel button
 # todo: Enforce business day start and end 8 AM to 6 PM?
 # todo: On network connection error, increase delay between checks to minimize repeated warnings
+# todo: Implement an interesting pattern for the final appointment alert
 
 from __future__ import print_function
 
