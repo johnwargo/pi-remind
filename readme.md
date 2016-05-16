@@ -28,9 +28,6 @@ To setup the hardware, complete the following steps:
 + Mount the Pimoroni Unicorn HAT on the Raspberry Pi device
 + Place the Pi in a case
 + Plug it in
-+ Optionally: assign a static IP address to the Pi.
-
-That's it, you're done. Those steps should take about 5 minutes tops. 
 
 When the Pi is all ready to go, update the device's software using the following commands:
 
@@ -39,9 +36,23 @@ When the Pi is all ready to go, update the device's software using the following
 
 The first command updates the local software repositories and the second command updates the Pi OS and associated files. 
 
-Next, copy the project's Python source code to the Pi using the following command:
+Next, create a directory for the project's files. Open a terminal window and execute the following commands:
 
-	curl yada yada yada
+	mkdir pi_remind
+	cd pi_remind
+
+Finally, copy the project's Python source code to the new folder and extract the files using the following commands:
+
+	wget https://github.com/johnwargo/pi_remind/archive/master.zip
+	unzip -j master.zip
+
+If all goes well, you should see the following files in the folder:
+
+- LICENSE
+- readme.md (this file)
+- remind.py
+- setup.py
+
 
 Project Setup
 ==================
