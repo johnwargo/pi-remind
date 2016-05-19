@@ -1,0 +1,16 @@
+This approach taken from https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=80096
+
+[Desktop Entry]
+Exec=sudo lxterminal -l -e '/home/pi/pi_remind/remind.py; /bin/sh '
+Type=Application
+
+
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Pi Reminder
+Comment=Raspberry Pi-based reminder app
+Exec=python /home/pi/pi_remind/remind.py
+StartupNotify=false
+Terminal=true
+Hidden=false
