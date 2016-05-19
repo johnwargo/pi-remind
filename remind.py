@@ -12,20 +12,23 @@
     Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
 ********************************************************************************************************************'''
+# todo: Enforce business day start and end 8 AM to 6 PM?
+# todo: Only flash lights if a reminder is set for the appointment
+# todo: Implement an interesting pattern for the final appointment alert (swirly lights for example)
+# todo: On network connection error, increase delay between checks to minimize repeated warnings
 # todo: Add support for snooze button
 # todo: Add support for cancel button
-# todo: Enforce business day start and end 8 AM to 6 PM?
-# todo: On network connection error, increase delay between checks to minimize repeated warnings
-# todo: Implement an interesting pattern for the final appointment alert
 
 from __future__ import print_function
 
+import colorsys
 import datetime
 import os
 import sys
 import time
 
 import httplib2
+import numpy as np
 import oauth2client
 import unicornhat as lights
 from apiclient import discovery
@@ -72,7 +75,27 @@ def flash_all_lights(flash_count, delay, red, green, blue):
         for y in range(8):
             for x in range(8):
                 lights.set_pixel(x, y, red, green, blue)
-                lights.show()
+        lights.show()
+        time.sleep(delay)
+        lights.off()
+        time.sleep(delay)
+
+
+def flash_random_lights(flash_count, delay):
+    # Copied from https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/random_blinky.py
+    for index in range(flash_count):
+        rand_mat = np.random.rand(8, 8)
+        for y in range(8):
+            for x in range(8):
+                h = 0.1 * rand_mat[x, y]
+                s = 0.8
+                v = rand_mat[x, y]
+                rgb = colorsys.hsv_to_rgb(h, s, v)
+                r = int(rgb[0] * 255.0)
+                g = int(rgb[1] * 255.0)
+                b = int(rgb[2] * 255.0)
+                lights.set_pixel(x, y, r, g, b)
+        lights.show()
         time.sleep(delay)
         lights.off()
         time.sleep(delay)
@@ -207,6 +230,7 @@ def main():
     print('Leaving main()')
 
 
+# now tell the user what we're doing...
 print('\n')
 print(HASHES)
 print(HASH, 'Pi Remind                           ', HASH)
@@ -217,12 +241,15 @@ print(HASHES)
 # The LED increments every time until it gets to the other side then starts over at the beginning again.
 # The current_activity_light variable keeps track of which light lit last. At start it's at -1 and goes from there.
 current_activity_light = -1
+
 # Set a specific brightness level for the Pimoroni Unicorn HAT, otherwise it's pretty bright.
 # Comment out the line below to see what the default looks like.
-lights.brightness(1)
+# lights.brightness(1)
 
+# flash some random LEDs just for fun...
+flash_random_lights(5, 0.1)
 # blink all the LEDs green to let the user know the hardware is working
-flash_all_lights(1, 0.25, 0, 128, 0)
+flash_all_lights(1, 1, 0, 128, 0)
 
 # Initialize the Google Calendar API stuff
 credentials = get_credentials()

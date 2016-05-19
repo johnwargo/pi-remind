@@ -1,9 +1,10 @@
 [Desktop Entry]
-Encoding=UTF-8
-Type=Application
 Name=pi_remind
 Comment=Raspberry Pi-based reminder app
-Exec=  sudo python /home/pi/pi_remind/remind.py
-StartupNotify=false
+Exec=sudo python /home/pi/pi_remind/remind.py
+Icon=
+StartupNotify=true
 Terminal=true
-Hidden=false
+X-MultipleArgs=false
+Type=Application
+Categories=Utility;TerminalEmulator;
