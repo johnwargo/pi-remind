@@ -27,7 +27,7 @@ To setup the hardware, complete the following steps:
 
 + Mount the Pimoroni Unicorn HAT on the Raspberry Pi device
 + Place the Pi in a case
-+ Plug it in
++ Power it up!
 
 When the Pi is all ready to go, update the device's software using the following commands:
 
