@@ -34,7 +34,9 @@ When the Pi is all ready to go, update the device's software using the following
 	sudo apt-get update
 	sudo apt-get upgrade
 
-The first command updates the local software repositories and the second command updates the Pi OS and associated files. 
+The first command updates the local software repositories and the second command updates the Pi OS and associated files. There’s a set of scientific libraries that are used in some of the Unicorn HAT code in the project, so you will need to install them using the following command:
+
+    sudo apt-get install python-numpy
 
 Next, create a directory for the project's files. Open a terminal window and execute the following commands:
 
@@ -53,25 +55,24 @@ If all goes well, you should see the following files in the folder:
 - remind.py
 - setup.py
 
+Plus some other stuff you may need.
 
-Project Setup
-==================
 Before you can use the project's software, you have to setup an account with Google in order to be able to execute the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
 
-Place your Google Calendar API `client_secret.json` file in the project folder. You'll need it to authorize the app to access your Google Calendar.
+Download your Google Calendar API application's `client_secret.json` file in the project folder. Be sure to name the downloaded file using that file name. You'll need it to authorize the app to access your Google Calendar and that file name is hard coded into the Python app.
 
 As part of that process, you'll install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) using the following command:
 
     sudo pip install --upgrade google-api-python-client
-
-Installation
-==================
 
 Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat):
 basically opening a terminal window and executing the following command:
 
     curl -sS get.pimoroni.com/unicornhat | bash
 
+With everything in place, execute the reminder app using the following command:
+
+    sudo python ./remind.py
 
 ***
 
