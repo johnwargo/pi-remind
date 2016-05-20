@@ -51,9 +51,9 @@ HASH = '#'
 HASHES = '########################################'
 
 # Reminder thresholds
-first_threshold = 5  # minutes, white lights before this
+FIRST_THRESHOLD = 5  # minutes, white lights before this
 # red for anything less than (and including) the second threshold
-second_threshold = 2  # minutes, yellow lights before this
+SECOND_THRESHOLD = 2  # minutes, yellow lights before this
 
 def show_activity_light(status):
     global current_activity_light
@@ -214,11 +214,11 @@ def main():
                 else:
                     print('Starts in 1.0 minute\n')
                 # is the appointment between 10 and 5 minutes from now?
-                if num_minutes >= first_threshold:
+                if num_minutes >= FIRST_THRESHOLD:
                     # Flash the lights in white
                     flash_all_lights(1, 0.25, 255, 255, 255)
                 # is the appointment less than 5 minutes but more than 2 minutes from now?
-                elif num_minutes > second_threshold:
+                elif num_minutes > SECOND_THRESHOLD:
                     # Flash the lights yellow
                     flash_all_lights(2, 0.25, 255, 255, 0)
                 # hmmm, less than 2 minutes, almost time to start!
