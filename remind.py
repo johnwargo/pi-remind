@@ -15,7 +15,6 @@
 # todo: Enforce business day start and end 8 AM to 6 PM?
 # todo: Only flash lights if a reminder is set for the appointment
 # todo: Implement an interesting pattern for the final appointment alert (swirly lights for example)
-# todo: On network connection error, increase delay between checks to minimize repeated warnings
 # todo: Add support for snooze button
 # todo: Add support for cancel button
 
@@ -51,6 +50,10 @@ CALENDAR_ID = 'primary'
 HASH = '#'
 HASHES = '########################################'
 
+# Reminder thresholds
+first_threshold = 5  # minutes, white lights before this
+# red for anything less than (and including) the second threshold
+second_threshold = 2  # minutes, yellow lights before this
 
 def show_activity_light(status):
     global current_activity_light
@@ -211,11 +214,11 @@ def main():
                 else:
                     print('Starts in 1.0 minute\n')
                 # is the appointment between 10 and 5 minutes from now?
-                if num_minutes >= 5:
+                if num_minutes >= first_threshold:
                     # Flash the lights in white
                     flash_all_lights(1, 0.25, 255, 255, 255)
                 # is the appointment less than 5 minutes but more than 2 minutes from now?
-                elif num_minutes > 2:
+                elif num_minutes > second_threshold:
                     # Flash the lights yellow
                     flash_all_lights(2, 0.25, 255, 255, 0)
                 # hmmm, less than 2 minutes, almost time to start!
