@@ -42,7 +42,7 @@ except ImportError:
     flags = None
 
 # Google says: If modifying these scopes, delete your previously saved credentials at ~/.credentials/client_secret.json
-# JMW says: On the pi, it's in /root/.credentials/
+# On the pi, it's in /root/.credentials/
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Pi Reminder'
