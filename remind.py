@@ -55,6 +55,7 @@ FIRST_THRESHOLD = 5  # minutes, white lights before this
 # red for anything less than (and including) the second threshold
 SECOND_THRESHOLD = 2  # minutes, yellow lights before this
 
+
 def show_activity_light(status):
     global current_activity_light
 
@@ -125,6 +126,25 @@ def get_credentials():
     return credentials
 
 
+def has_reminder(event):
+    # Return true if there's a reminder set for the event
+    # First, check to see if there is a default reminder set
+    # Yes, I know I could have done this and the next check without using variables
+    # this approach just makes the code easier to understand
+    has_default_reminder = event['reminders'].get('useDefault')
+    if has_default_reminder:
+        # if yes, then we're good
+        return True
+    else:
+        # are there overrides set for reminders?
+        overrides = event['reminders'].get('overrides')
+        if overrides:
+            # OK, then we have a reminder to use
+            return True
+    # if we got this far, then there must not be a reminder set
+    return False
+
+
 def get_next_event(search_limit):
     # modified from https://developers.google.com/google-apps/calendar/quickstart/python
     # get all of the events on the calendar from now through 10 minutes from now
@@ -167,14 +187,16 @@ def get_next_event(search_limit):
                     event_start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00')
                     # does the event start in the future?
                     if current_time < event_start:
-                        # no? So we can use it
-                        print('Found event:', event['summary'])
-                        print('Event starts:', start)
-                        # figure out how soon it starts
-                        time_delta = event_start - current_time
-                        # Round to the nearest minute and return with the object
-                        event['num_minutes'] = time_delta.total_seconds() // 60
-                        return event
+                        # only use events that have a reminder set
+                        if has_reminder(event):
+                            # no? So we can use it
+                            print('Found event:', event['summary'])
+                            print('Event starts:', start)
+                            # figure out how soon it starts
+                            time_delta = event_start - current_time
+                            # Round to the nearest minute and return with the object
+                            event['num_minutes'] = time_delta.total_seconds() // 60
+                            return event
     except:
         # well, something went wrong
         # light up the array with red LEDs to indicate a problem
