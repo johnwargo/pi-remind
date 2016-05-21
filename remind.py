@@ -22,6 +22,7 @@ from __future__ import print_function
 
 import colorsys
 import datetime
+import math
 import os
 import sys
 import time
@@ -54,6 +55,40 @@ HASHES = '########################################'
 FIRST_THRESHOLD = 5  # minutes, white lights before this
 # red for anything less than (and including) the second threshold
 SECOND_THRESHOLD = 2  # minutes, yellow lights before this
+
+
+def swirl(x, y, step):
+    x -= 4
+    y -= 4
+
+    dist = math.sqrt(pow(x, 2) + pow(y, 2)) / 2.0
+    angle = (step / 10.0) + (dist * 1.5)
+    s = math.sin(angle);
+    c = math.cos(angle);
+
+    xs = x * c - y * s;
+    ys = x * s + y * c;
+
+    r = abs(xs + ys)
+    r = r * 64.0
+    r -= 20
+
+    return (r, r + (s * 130), r + (c * 130))
+
+
+def do_swirl():
+    step = 0
+    for i in range(100):
+        for y in range(8):
+            for x in range(8):
+                r, g, b = swirl(x, y, step)
+                r = int(max(0, min(255, r)))
+                g = int(max(0, min(255, g)))
+                b = int(max(0, min(255, b)))
+                lights.set_pixel(x, y, r, g, b)
+        step += 1
+        lights.show()
+        time.sleep(0.01)
 
 
 def show_activity_light(status):
@@ -199,10 +234,10 @@ def get_next_event(search_limit):
                             return event
     except:
         # well, something went wrong
-        # light up the array with red LEDs to indicate a problem
-        flash_all_lights(1, 2, 255, 0, 0)
         # not much else we can do here except to skip this attempt and try again later
         print('Error connecting to calendar:', sys.exc_info()[0], '\n')
+        # light up the array with red LEDs to indicate a problem
+        flash_all_lights(1, 2, 255, 0, 0)
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
     return None
@@ -245,8 +280,7 @@ def main():
                     flash_all_lights(2, 0.25, 255, 255, 0)
                 # hmmm, less than 2 minutes, almost time to start!
                 else:
-                    # flash the lights red
-                    flash_all_lights(3, 0.25, 255, 0, 0)
+                    do_swirl()
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
