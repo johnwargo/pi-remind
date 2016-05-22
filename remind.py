@@ -13,8 +13,6 @@
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
 ********************************************************************************************************************'''
 # todo: Enforce business day start and end 8 AM to 6 PM?
-# todo: Only flash lights if a reminder is set for the appointment
-# todo: Implement an interesting pattern for the final appointment alert (swirly lights for example)
 # todo: Add support for snooze button
 # todo: Add support for cancel button
 
