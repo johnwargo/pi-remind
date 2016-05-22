@@ -6,7 +6,7 @@ The project uses a network connected Raspberry Pi and a [Pimoroni Unicorn HAT](h
 
 * White @ 10 minutes
 * Yellow @ 5 minutes
-* Red @ 2 minutes
+* Multi-color swirl @ 2 minutes
 
 For this project, the alert is simply all LEDs in the array lit with the same color for a period. If you're adventurous, you can change the code to use any of the sample patterns included with the [Unicorn HAT Sample Code](https://github.com/pimoroni/unicorn-hat/tree/master/python/examples).
 
