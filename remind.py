@@ -76,6 +76,7 @@ def swirl(x, y, step):
 
 
 def do_swirl():
+    # modified from: https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/demo.py
     step = 0
     for i in range(200):
         for y in range(8):
@@ -88,27 +89,37 @@ def do_swirl():
         step += 1
         lights.show()
         time.sleep(0.01)
+    # turn off all lights when you're done
+    lights.off()
 
 
 def show_activity_light(status):
+    # used to turn on one LED at a time across the bottom row of lights. The app uses this as an unobtrusive
+    # indicator when it connects to Google to check the calendar. Its intended as a subtle reminder that things
+    # are still working.
     global current_activity_light
 
-    # Turning on or off?
+    # Are we turning the LED on or off?
     if status:
-        # on
+        # on, OK. Which light will we be illuminating?
         if current_activity_light > 6:
+            # start over at the beginning when you're at the end of the row
             current_activity_light = -1
-        # increment the current light
+        # increment the current light (to the next one)
         current_activity_light += 1
-        # set the pixel
+        # set the pixel color
         lights.set_pixel(current_activity_light, 0, 0, 128, 0)
         # show the pixel
         lights.show()
     else:
+        # off? Ok, turn all of the lights off (no need to check for the specific light as we're just blanking
+        # the screen
         lights.off()
 
 
 def flash_all_lights(flash_count, delay, red, green, blue):
+    # light all of the LEDs in a RGB single color. Repeat 'flash_count' times
+    # keep illuminated for 'delay' value
     for index in range(flash_count):
         for y in range(8):
             for x in range(8):
