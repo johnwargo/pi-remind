@@ -290,8 +290,8 @@ def main():
                     flash_all_lights(2, 0.25, 255, 255, 0)
                 # hmmm, less than 2 minutes, almost time to start!
                 else:
-                    #swirl the lights. Longer every second closer to start time
-                    do_swirl((4-num_minutes) * 100)
+                    # swirl the lights. Longer every second closer to start time
+                    do_swirl(int((4 - num_minutes) * 100))
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
