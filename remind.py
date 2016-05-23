@@ -75,10 +75,10 @@ def swirl(x, y, step):
     return (r, r + (s * 130), r + (c * 130))
 
 
-def do_swirl():
+def do_swirl(duration):
     # modified from: https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/demo.py
     step = 0
-    for i in range(200):
+    for i in range(duration):
         for y in range(8):
             for x in range(8):
                 r, g, b = swirl(x, y, step)
@@ -290,7 +290,8 @@ def main():
                     flash_all_lights(2, 0.25, 255, 255, 0)
                 # hmmm, less than 2 minutes, almost time to start!
                 else:
-                    do_swirl()
+                    #swirl the lights. Longer every second closer to start time
+                    do_swirl((4-num_minutes) * 100)
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
