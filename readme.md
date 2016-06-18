@@ -63,7 +63,7 @@ Download your Google Calendar API application's `client_secret.json` file in the
 
 As part of that process, you'll install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
 
-    sudo pip install --upgrade google-api-python-client dateutils
+    sudo pip install --upgrade google-api-python-client python-dateutils
 
 Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat):
 basically opening a terminal window and executing the following command:

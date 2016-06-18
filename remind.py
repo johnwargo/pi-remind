@@ -24,11 +24,11 @@ import math
 import os
 import sys
 import time
-import pytz
 
 import httplib2
 import numpy as np
 import oauth2client
+import pytz
 import unicornhat as lights
 from apiclient import discovery
 from dateutil import parser
@@ -221,7 +221,7 @@ def get_next_event(search_limit):
             return None
         else:
             # what time is it now?
-            current_time = pytz.utc.localize( datetime.datetime.utcnow())
+            current_time = pytz.utc.localize(datetime.datetime.utcnow())
             # loop through the events in the list
             for event in event_list:
                 # we only care about events that have a start time
