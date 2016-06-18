@@ -24,12 +24,14 @@ import math
 import os
 import sys
 import time
+import pytz
 
 import httplib2
 import numpy as np
 import oauth2client
 import unicornhat as lights
 from apiclient import discovery
+from dateutil import parser
 from oauth2client import client
 from oauth2client import tools
 
@@ -219,7 +221,7 @@ def get_next_event(search_limit):
             return None
         else:
             # what time is it now?
-            current_time = datetime.datetime.now()
+            current_time = pytz.utc.localize( datetime.datetime.utcnow())
             # loop through the events in the list
             for event in event_list:
                 # we only care about events that have a start time
@@ -229,7 +231,7 @@ def get_next_event(search_limit):
                 if start:
                     # When does the appointment start?
                     # Convert the string it into a Python dateTime object so we can do math on it
-                    event_start = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S-04:00')
+                    event_start = parser.parse(start)
                     # does the event start in the future?
                     if current_time < event_start:
                         # only use events that have a reminder set

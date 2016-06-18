@@ -61,9 +61,9 @@ Before you can use the project's software, you have to setup an account with Goo
 
 Download your Google Calendar API application's `client_secret.json` file in the project folder. Be sure to name the downloaded file using that file name. You'll need it to authorize the app to access your Google Calendar and that file name is hard coded into the Python app.
 
-As part of that process, you'll install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) using the following command:
+As part of that process, you'll install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
 
-    sudo pip install --upgrade google-api-python-client
+    sudo pip install --upgrade google-api-python-client dateutils
 
 Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat):
 basically opening a terminal window and executing the following command:
