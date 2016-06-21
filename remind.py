@@ -237,7 +237,8 @@ def get_next_event(search_limit):
                         # only use events that have a reminder set
                         if has_reminder(event):
                             # no? So we can use it
-                            print('Found event:', event['summary'])
+                            event_summary = event['summary'] if 'summary' in event else 'No Title'
+                            print('Found event:', event_summary)
                             print('Event starts:', start)
                             # figure out how soon it starts
                             time_delta = event_start - current_time
