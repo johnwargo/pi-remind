@@ -12,10 +12,6 @@
     Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
 ********************************************************************************************************************'''
-# todo: Enforce business day start and end 8 AM to 6 PM?
-# todo: Add support for snooze button
-# todo: Add support for cancel button
-
 from __future__ import print_function
 
 import colorsys
