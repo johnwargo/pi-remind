@@ -10,8 +10,9 @@ The project uses a network connected Raspberry Pi and a [Pimoroni Unicorn HAT](h
 
 For this project, the alert is simply all LEDs in the array lit with the same color for a period. If you're adventurous, you can change the code to use any of the sample patterns included with the [Unicorn HAT Sample Code](https://github.com/pimoroni/unicorn-hat/tree/master/python/examples).
 
+
 Required Components
-==================
+=================================
 For this project, I used the following components:
 
 + Raspberry Pi - I used a [Raspberry Pi 2 Model B](https://www.raspberrypi.org/), but most any Pi will work. Check the Unicorn HAT documentation for supported Pi devices.
@@ -21,8 +22,9 @@ For this project, I used the following components:
 
 The only required component is the Unicorn HAT as the code in this project is hand crafted for that device. Otherwise, pick whatever Raspberry Pi device, case and power supply that works best for you.
 
+
 Raspberry Pi Setup
-==================
+=================================
 To setup the hardware, complete the following steps:
 
 + Mount the Pimoroni Unicorn HAT on the Raspberry Pi device
@@ -50,12 +52,12 @@ Finally, copy the project's Python source code to the new folder and extract the
 
 If all goes well, you should see the following files in the folder:
 
-- LICENSE
-- readme.md (this file)
-- remind.py
-- setup.py
-
-Plus some other stuff you may need.
+- `LICENSE`
+- `pi_remind.desktop`
+- `readme.md` (this file)
+- `remind.py`
+- `setup.py`
+- `start_remind.sh`
 
 Before you can use the project's software, you have to setup an account with Google in order to be able to execute the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
 
@@ -63,7 +65,7 @@ Download your Google Calendar API application's `client_secret.json` file in the
 
 As part of that process, you'll install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
 
-    sudo pip install --upgrade google-api-python-client python-dateutils pytz
+    sudo pip install --upgrade google-api-python-client python-dateutil pytz
 
 Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat):
 basically opening a terminal window and executing the following command:
@@ -73,6 +75,34 @@ basically opening a terminal window and executing the following command:
 With everything in place, execute the reminder app using the following command:
 
     sudo python ./remind.py
+
+PI Remind should run and start watching your calendar for events.
+
+
+Additional Files
+---------------------------------
+The project includes several files that are not directly related to the Pi Reminder capabilities: 
+
+- `pi_remind.desktop`
+- `setup.py`
+- `start_remind.sh`
+
+The `setup.py` file is a python setup script. Pi Reminder is my first Python app, so I created that file as I figured how all of this worked. You don't 'need' it, using the instructions included here, you'll be able to get the app running.
+
+The `pi_remind.desktop` and `start_remind.sh` files implement two possible ways to automate the startup of the `pi_remind` app.  I looked around for the 'right' way to autostart a Python app on the Pi and didn't find one. These two files were just me hacking away at finding a good way to get this working. One way to start the app is to put the `pi_remind.desktop` file in the Pi's `~/.config/autostart` folder. The file is a text file, so be sure to update it with the target folder where you installed the Pi Reminder files. `start_remind.sh` is a shell script you can execute on startup to start Pi Remind.
+  
+
+Known Issues
+=================================
+Reminders are triggered for canceled events. If you have your Google Calendar configured to show deleted events, pi_remind will flash its lights for those events as well. I've tried setting `showDeleted` to `false` in the call to get the calendar entry list from Google, but it does not seem to have an effect (in my testing anyway).
+
+
+Revision History
+=================================
+2016-06-20: Reader John McCabe submitted a patch to fix an issue where events with empty descriptions were causing an error. If the app encounters an event without a summary, it sets the output to `No Title`.
+
+2016-06-18: Reader John McCabe submitted a patch to update the code so it takes into account the local timezone when working with dates/times. In my original code, I hardcoded my time zone into UTC conversions and intended to document this so others could update it to match their current timezone. John implemented a better solution, using some Python Date/Time utilities to properly reflect current time zone into calculations.  
+
 
 ***
 
