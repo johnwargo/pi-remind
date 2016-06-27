@@ -95,24 +95,31 @@ def show_activity_light(status):
     # used to turn on one LED at a time across the bottom row of lights. The app uses this as an unobtrusive
     # indicator when it connects to Google to check the calendar. Its intended as a subtle reminder that things
     # are still working.
+    # On 06/27/2016 changed the code so it leaves the light on (in a different color) so you can tell that the
+    # Pi is still running the code. So, it shows green when connecting to Google, then switches to blue when
+    # its done.
     global current_activity_light
 
     # Are we turning the LED on or off?
     if status:
-        # on, OK. Which light will we be illuminating?
-        if current_activity_light > 6:
+        # turn off (clear) any lights that are on
+        lights.off()
+        # OK. Which light will we be illuminating?
+        if current_activity_light < 1:
             # start over at the beginning when you're at the end of the row
-            current_activity_light = -1
+            current_activity_light = 8
         # increment the current light (to the next one)
-        current_activity_light += 1
+        current_activity_light -= 1
         # set the pixel color
         lights.set_pixel(current_activity_light, 0, 0, 128, 0)
         # show the pixel
         lights.show()
     else:
-        # off? Ok, turn all of the lights off (no need to check for the specific light as we're just blanking
-        # the screen
-        lights.off()
+        # changed this to setting the current LED as blue to show it's running
+        lights.set_pixel(current_activity_light, 0, 0, 0, 128)
+        lights.show()
+        # change the above code to the below if you don't want a light left on.
+        # lights.off()
 
 
 def flash_all_lights(flash_count, delay, red, green, blue):
@@ -309,7 +316,7 @@ print(HASHES)
 # The app flashes a green light in the first row every time it connects to Google to check the calendar.
 # The LED increments every time until it gets to the other side then starts over at the beginning again.
 # The current_activity_light variable keeps track of which light lit last. At start it's at -1 and goes from there.
-current_activity_light = -1
+current_activity_light = 8
 
 # Set a specific brightness level for the Pimoroni Unicorn HAT, otherwise it's pretty bright.
 # Comment out the line below to see what the default looks like.
