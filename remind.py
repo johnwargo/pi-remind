@@ -254,6 +254,10 @@ def get_next_event(search_limit):
         print('Error connecting to calendar:', sys.exc_info()[0], '\n')
         # light up the array with red LEDs to indicate a problem
         flash_all_lights(1, 2, 255, 0, 0)
+        # now set the current_activity_light to red to indicate an error state
+        # with the last reading
+        lights.set_pixel(current_activity_light, 0, 128, 0, 0)
+        lights.show()
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
     return None
