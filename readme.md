@@ -99,7 +99,9 @@ Reminders are triggered for canceled events. If you have your Google Calendar co
 
 Revision History
 =================================
-2016-06-27: Fixed the progres indicator LED so it cycles from left to right and so it leaves the light blue on success so you can tell at a glance that the Pi is still running the code.
+2016-06-28: Added red LED option for current_activity_light when there's a failure connecting to Google. Added this for a visual indicator when errors occur and the user misses the red flash.
+ 
+2016-06-27: Fixed the progress indicator LED so it cycles from left to right and so it leaves the light blue on success so you can tell at a glance that the Pi is still running the code.
 
 2016-06-20: Reader John McCabe submitted a patch to fix an issue where events with empty descriptions were causing an error. If the app encounters an event without a summary, it sets the output to `No Title`.
 
