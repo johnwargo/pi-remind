@@ -302,6 +302,8 @@ def main():
                 else:
                     # swirl the lights. Longer every second closer to start time
                     do_swirl(int((4 - num_minutes) * 100))
+            # set the activity light so we can tell it's still working
+            show_activity_light(False)
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
