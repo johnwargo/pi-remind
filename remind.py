@@ -56,12 +56,15 @@ SECOND_THRESHOLD = 2  # minutes, YELLOW lights before this
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
+ORANGE = (255, 153, 0)
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
+
 # constants used in the app to display status
-SUCCESS_COLOR = RED
-FAILURE_COLOR = GREEN
 CHECKING_COLOR = BLUE
+SUCCESS_COLOR = GREEN
+FAILURE_COLOR = RED
+
 
 def swirl(x, y, step):
     # modified from: https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/demo.py
@@ -77,7 +80,8 @@ def swirl(x, y, step):
     ys = x * s + y * c
 
     r = abs(xs + ys)
-    r = r * 64.0
+    # r = r * 64.0
+    r *= 64.0
     r -= 20
 
     return (r, r + (s * 130), r + (c * 130))
@@ -109,7 +113,6 @@ def set_activity_light(color, increment):
     # Pi is still running the code. So, it shows GREEN when connecting to Google, then switches to BLUE when
     # its done.
     global current_activity_light
-
     # turn off (clear) any lights that are on
     lights.off()
     if increment:
@@ -160,6 +163,7 @@ def flash_random(flash_count, delay):
 
 def get_credentials():
     # taken from https://developers.google.com/google-apps/calendar/quickstart/python
+    global credentials
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
@@ -205,7 +209,7 @@ def get_next_event(search_limit):
     # this 'now' is in a different format (UTC)
     now = datetime.datetime.utcnow()
     then = now + datetime.timedelta(minutes=search_limit)
-    # turn on a sequential GREEN LED to show that you're requesting data from the Google Calendar API
+    # turn on a sequential CHECKING_COLOR LED to show that you're requesting data from the Google Calendar API
     set_activity_light(CHECKING_COLOR, True)
     try:
         # ask Google for the calendar entries
@@ -216,7 +220,7 @@ def get_next_event(search_limit):
             timeMax=then.isoformat() + 'Z',
             singleEvents=True,
             orderBy='startTime').execute()
-        # turn off the GREEN LED so you'll know data was returned from the Google calendar API
+        # turn on the SUCCESS_COLOR LED so you'll know data was returned from the Google calendar API
         set_activity_light(SUCCESS_COLOR, False)
         # Get the event list
         event_list = events_result.get('items', [])
@@ -255,11 +259,12 @@ def get_next_event(search_limit):
         # well, something went wrong
         # not much else we can do here except to skip this attempt and try again later
         print('Error connecting to calendar:', sys.exc_info()[0], '\n')
-        # light up the array with RED LEDs to indicate a problem
+        # light up the array with FAILURE_COLOR LEDs to indicate a problem
         flash_all(1, 2, FAILURE_COLOR)
-        # now set the current_activity_light to RED to indicate an error state
+        # now set the current_activity_light to FAILURE_COLOR to indicate an error state
         # with the last reading
         set_activity_light(FAILURE_COLOR, False)
+
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
     return None
@@ -296,16 +301,20 @@ def main():
                 if num_minutes >= FIRST_THRESHOLD:
                     # Flash the lights in WHITE
                     flash_all(1, 0.25, WHITE)
+                    # set the activity light to WHITE as an indicator
+                    set_activity_light(WHITE, False)
                 # is the appointment less than 5 minutes but more than 2 minutes from now?
                 elif num_minutes > SECOND_THRESHOLD:
                     # Flash the lights YELLOW
                     flash_all(2, 0.25, YELLOW)
+                    # set the activity light to YELLOw as an indicator
+                    set_activity_light(YELLOW, False)
                 # hmmm, less than 2 minutes, almost time to start!
                 else:
                     # swirl the lights. Longer every second closer to start time
                     do_swirl(int((4 - num_minutes) * 100))
-            # set the activity light so we can tell it's still working
-            set_activity_light(BLUE, False)
+                    # set the activity light to SUCCESS_COLOR (green by default)
+                    set_activity_light(ORANGE, False)
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
