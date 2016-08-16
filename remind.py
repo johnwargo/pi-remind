@@ -7,7 +7,7 @@
     This application connects to a Google Calendar and determines whether there are any appointments in the next
     few minutes and flashes some LEDs if there are. The project uses a Raspberry Pi 2 device with a Pimoroni
     Unicorn HAT (an 8x8 matrix of bright, multi-colored LEDs) to display an obnoxious reminder every minute, changing
-    color at 10 minutes (white), 5 minutes (yellow) and 2 minutes (multi-color swirl).
+    color at 10 minutes (WHITE), 5 minutes (YELLOW) and 2 minutes (multi-color swirl).
 
     Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
@@ -48,17 +48,20 @@ HASH = '#'
 HASHES = '########################################'
 
 # Reminder thresholds
-FIRST_THRESHOLD = 5  # minutes, white lights before this
-# red for anything less than (and including) the second threshold
-SECOND_THRESHOLD = 2  # minutes, yellow lights before this
+FIRST_THRESHOLD = 5  # minutes, WHITE lights before this
+# RED for anything less than (and including) the second threshold
+SECOND_THRESHOLD = 2  # minutes, YELLOW lights before this
 
 # COLORS
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
-white = (255, 255, 255)
-yellow = (255, 255, 0)
-
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+WHITE = (255, 255, 255)
+YELLOW = (255, 255, 0)
+# constants used in the app to display status
+SUCCESS_COLOR = RED
+FAILURE_COLOR = GREEN
+CHECKING_COLOR = BLUE
 
 def swirl(x, y, step):
     # modified from: https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/demo.py
@@ -103,7 +106,7 @@ def set_activity_light(color, increment):
     # indicator when it connects to Google to check the calendar. Its intended as a subtle reminder that things
     # are still working.
     # On 06/27/2016 changed the code so it leaves the light on (in a different color) so you can tell that the
-    # Pi is still running the code. So, it shows green when connecting to Google, then switches to blue when
+    # Pi is still running the code. So, it shows GREEN when connecting to Google, then switches to BLUE when
     # its done.
     global current_activity_light
 
@@ -202,8 +205,8 @@ def get_next_event(search_limit):
     # this 'now' is in a different format (UTC)
     now = datetime.datetime.utcnow()
     then = now + datetime.timedelta(minutes=search_limit)
-    # turn on a sequential green LED to show that you're requesting data from the Google Calendar API
-    set_activity_light(green, True)
+    # turn on a sequential GREEN LED to show that you're requesting data from the Google Calendar API
+    set_activity_light(CHECKING_COLOR, True)
     try:
         # ask Google for the calendar entries
         events_result = service.events().list(
@@ -213,8 +216,8 @@ def get_next_event(search_limit):
             timeMax=then.isoformat() + 'Z',
             singleEvents=True,
             orderBy='startTime').execute()
-        # turn off the green LED so you'll know data was returned from the Google calendar API
-        set_activity_light(blue, False)
+        # turn off the GREEN LED so you'll know data was returned from the Google calendar API
+        set_activity_light(SUCCESS_COLOR, False)
         # Get the event list
         event_list = events_result.get('items', [])
         # did we get a return value?
@@ -252,11 +255,11 @@ def get_next_event(search_limit):
         # well, something went wrong
         # not much else we can do here except to skip this attempt and try again later
         print('Error connecting to calendar:', sys.exc_info()[0], '\n')
-        # light up the array with red LEDs to indicate a problem
-        flash_all(1, 2, red)
-        # now set the current_activity_light to red to indicate an error state
+        # light up the array with RED LEDs to indicate a problem
+        flash_all(1, 2, FAILURE_COLOR)
+        # now set the current_activity_light to RED to indicate an error state
         # with the last reading
-        set_activity_light(red, False)
+        set_activity_light(FAILURE_COLOR, False)
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
     return None
@@ -291,18 +294,18 @@ def main():
                     print('Starts in 1.0 minute\n')
                 # is the appointment between 10 and 5 minutes from now?
                 if num_minutes >= FIRST_THRESHOLD:
-                    # Flash the lights in white
-                    flash_all(1, 0.25, white)
+                    # Flash the lights in WHITE
+                    flash_all(1, 0.25, WHITE)
                 # is the appointment less than 5 minutes but more than 2 minutes from now?
                 elif num_minutes > SECOND_THRESHOLD:
-                    # Flash the lights yellow
-                    flash_all(2, 0.25, yellow)
+                    # Flash the lights YELLOW
+                    flash_all(2, 0.25, YELLOW)
                 # hmmm, less than 2 minutes, almost time to start!
                 else:
                     # swirl the lights. Longer every second closer to start time
                     do_swirl(int((4 - num_minutes) * 100))
             # set the activity light so we can tell it's still working
-            set_activity_light(blue, False)
+            set_activity_light(BLUE, False)
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
@@ -318,19 +321,19 @@ print(HASH, 'Pi Remind                           ', HASH)
 print(HASH, 'By John M. Wargo (www.johnwargo.com)', HASH)
 print(HASHES)
 
-# The app flashes a green light in the first row every time it connects to Google to check the calendar.
+# The app flashes a GREEN light in the first row every time it connects to Google to check the calendar.
 # The LED increments every time until it gets to the other side then starts over at the beginning again.
 # The current_activity_light variable keeps track of which light lit last. At start it's at -1 and goes from there.
 current_activity_light = 8
 
 # Set a specific brightness level for the Pimoroni Unicorn HAT, otherwise it's pretty bright.
 # Comment out the line below to see what the default looks like.
-# lights.brightness(1)
+lights.brightness(0.75)
 
 # flash some random LEDs just for fun...
 flash_random(5, 0.1)
-# blink all the LEDs green to let the user know the hardware is working
-flash_all(1, 1, green)
+# blink all the LEDs GREEN to let the user know the hardware is working
+flash_all(1, 1, GREEN)
 
 # Initialize the Google Calendar API stuff
 credentials = get_credentials()
