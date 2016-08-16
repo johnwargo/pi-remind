@@ -52,6 +52,13 @@ FIRST_THRESHOLD = 5  # minutes, white lights before this
 # red for anything less than (and including) the second threshold
 SECOND_THRESHOLD = 2  # minutes, yellow lights before this
 
+# COLORS
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
+white = (255, 255, 255)
+yellow = (255, 255, 0)
+
 
 def swirl(x, y, step):
     # modified from: https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/demo.py
@@ -60,11 +67,11 @@ def swirl(x, y, step):
 
     dist = math.sqrt(pow(x, 2) + pow(y, 2)) / 2.0
     angle = (step / 10.0) + (dist * 1.5)
-    s = math.sin(angle);
-    c = math.cos(angle);
+    s = math.sin(angle)
+    c = math.cos(angle)
 
-    xs = x * c - y * s;
-    ys = x * s + y * c;
+    xs = x * c - y * s
+    ys = x * s + y * c
 
     r = abs(xs + ys)
     r = r * 64.0
@@ -91,7 +98,7 @@ def do_swirl(duration):
     lights.off()
 
 
-def show_activity_light(status):
+def set_activity_light(color, increment):
     # used to turn on one LED at a time across the bottom row of lights. The app uses this as an unobtrusive
     # indicator when it connects to Google to check the calendar. Its intended as a subtle reminder that things
     # are still working.
@@ -100,42 +107,35 @@ def show_activity_light(status):
     # its done.
     global current_activity_light
 
-    # Are we turning the LED on or off?
-    if status:
-        # turn off (clear) any lights that are on
-        lights.off()
+    # turn off (clear) any lights that are on
+    lights.off()
+    if increment:
         # OK. Which light will we be illuminating?
         if current_activity_light < 1:
             # start over at the beginning when you're at the end of the row
             current_activity_light = 8
         # increment the current light (to the next one)
         current_activity_light -= 1
-        # set the pixel color
-        lights.set_pixel(current_activity_light, 0, 0, 128, 0)
-        # show the pixel
-        lights.show()
-    else:
-        # changed this to setting the current LED as blue to show it's running
-        lights.set_pixel(current_activity_light, 0, 0, 0, 128)
-        lights.show()
-        # change the above code to the below if you don't want a light left on.
-        # lights.off()
+    # set the pixel color
+    lights.set_pixel(current_activity_light, 0, color[0], color[1], color[2])
+    # show the pixel
+    lights.show()
 
 
-def flash_all_lights(flash_count, delay, red, green, blue):
+def flash_all(flash_count, delay, color):
     # light all of the LEDs in a RGB single color. Repeat 'flash_count' times
     # keep illuminated for 'delay' value
     for index in range(flash_count):
         for y in range(8):
             for x in range(8):
-                lights.set_pixel(x, y, red, green, blue)
+                lights.set_pixel(x, y, color[0], color[1], color[2])
         lights.show()
         time.sleep(delay)
         lights.off()
         time.sleep(delay)
 
 
-def flash_random_lights(flash_count, delay):
+def flash_random(flash_count, delay):
     # Copied from https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/random_blinky.py
     for index in range(flash_count):
         rand_mat = np.random.rand(8, 8)
@@ -203,7 +203,7 @@ def get_next_event(search_limit):
     now = datetime.datetime.utcnow()
     then = now + datetime.timedelta(minutes=search_limit)
     # turn on a sequential green LED to show that you're requesting data from the Google Calendar API
-    show_activity_light(True)
+    set_activity_light(green, True)
     try:
         # ask Google for the calendar entries
         events_result = service.events().list(
@@ -214,7 +214,7 @@ def get_next_event(search_limit):
             singleEvents=True,
             orderBy='startTime').execute()
         # turn off the green LED so you'll know data was returned from the Google calendar API
-        show_activity_light(False)
+        set_activity_light(blue, False)
         # Get the event list
         event_list = events_result.get('items', [])
         # did we get a return value?
@@ -253,11 +253,10 @@ def get_next_event(search_limit):
         # not much else we can do here except to skip this attempt and try again later
         print('Error connecting to calendar:', sys.exc_info()[0], '\n')
         # light up the array with red LEDs to indicate a problem
-        flash_all_lights(1, 2, 255, 0, 0)
+        flash_all(1, 2, red)
         # now set the current_activity_light to red to indicate an error state
         # with the last reading
-        lights.set_pixel(current_activity_light, 0, 128, 0, 0)
-        lights.show()
+        set_activity_light(red, False)
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
     return None
@@ -293,17 +292,17 @@ def main():
                 # is the appointment between 10 and 5 minutes from now?
                 if num_minutes >= FIRST_THRESHOLD:
                     # Flash the lights in white
-                    flash_all_lights(1, 0.25, 255, 255, 255)
+                    flash_all(1, 0.25, white)
                 # is the appointment less than 5 minutes but more than 2 minutes from now?
                 elif num_minutes > SECOND_THRESHOLD:
                     # Flash the lights yellow
-                    flash_all_lights(2, 0.25, 255, 255, 0)
+                    flash_all(2, 0.25, yellow)
                 # hmmm, less than 2 minutes, almost time to start!
                 else:
                     # swirl the lights. Longer every second closer to start time
                     do_swirl(int((4 - num_minutes) * 100))
             # set the activity light so we can tell it's still working
-            show_activity_light(False)
+            set_activity_light(blue, False)
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
@@ -329,9 +328,9 @@ current_activity_light = 8
 # lights.brightness(1)
 
 # flash some random LEDs just for fun...
-flash_random_lights(5, 0.1)
+flash_random(5, 0.1)
 # blink all the LEDs green to let the user know the hardware is working
-flash_all_lights(1, 1, 0, 128, 0)
+flash_all(1, 1, green)
 
 # Initialize the Google Calendar API stuff
 credentials = get_credentials()

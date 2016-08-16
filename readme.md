@@ -98,9 +98,10 @@ Known Issues
 =================================
 Reminders are triggered for canceled events. If you have your Google Calendar configured to show deleted events, pi_remind will flash its lights for those events as well. I've tried setting `showDeleted` to `false` in the call to get the calendar entry list from Google, but it does not seem to have an effect (in my testing anyway).
 
-
 Revision History
 =================================
+2016-08-15: Updated the `show_activity_light` function, renamed the function to `set_activity_light` and updated it so it takes a `color` paremeter. Modified the flash_all_lights to take a `color` parameter. Renamed `flash_all_lights` and `flass_random_lights` to `flash_all` and `flash_random`.
+ 
 2016-08-09: Added code to set the status light after flashing the LEDs. Otherwise, within 10 minutes of an event, you wouldn't see the status light indicating that the app is running. 
 
 2016-06-28: Added red LED option for current_activity_light when there's a failure connecting to Google. Added this for a visual indicator when errors occur and the user misses the red flash.
