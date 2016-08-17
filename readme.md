@@ -2,14 +2,32 @@ Raspberry Pi Appointment Reminder
 =================================
 I often find myself missing appointments because I'm engrossed in my work or because I've switched to a different computer and can't hear the reminder ping on my work laptop. I created this project to give me a visual reminder, an obnoxious, silent countdown timer I can set on my desk to flash lights at me as a warning before my next meeting starts.
 
-The project uses a network connected Raspberry Pi and a [Pimoroni Unicorn HAT](https://shop.pimoroni.com/collections/raspberry-pi/products/unicorn-phat) to display the reminder. The Pi will connect to Google Calendar and check periodically for upcoming appointments then display the following alerts:
+The project uses a network connected Raspberry Pi and a [Pimoroni Unicorn HAT](https://shop.pimoroni.com/collections/raspberry-pi/products/unicorn-phat) to display the reminder.
 
-* White @ 10 minutes
-* Yellow @ 5 minutes
+Alerts
+------
+
+The Pi will connect to Google Calendar and check every minute for upcoming appointments then flash the LEDs for following alerts:
+
+* White @ 10 minutes until 5 minutes
+* Yellow @ 5 minutes until 2 minutes
 * Multi-color swirl @ 2 minutes
 
-For this project, the alert is simply all LEDs in the array lit with the same color for a period. If you're adventurous, you can change the code to use any of the sample patterns included with the [Unicorn HAT Sample Code](https://github.com/pimoroni/unicorn-hat/tree/master/python/examples).
+If you're feeling adventurous, you can change the code to use any of the sample patterns included with the [Unicorn HAT Sample Code](https://github.com/pimoroni/unicorn-hat/tree/master/python/examples).
 
+Indicator LED
+-------------
+
+The app uses a single indicator LED to let you know the app is working. It will illuminate a single LED along the bottom row of the Unicorn HAT and move the LED across the display every time it connects to Google to obtain calendar information. The color of the LED indicates status of the app as well:
+
+* Blue - The app is connecting to the Google Calendar API
+* Green - The app received data from the Google Calendar API, but there are no pending appointments within the next 10 minutes
+* Red - The app encountered an error connecting to the Google Calendar API
+* White - There is an appointment beginning within 10 minutes
+* Yellow - There is an appointment beginning within the next 5 minutes
+* Orange - There is an appointment beginning within the next 2 minutes
+
+This way, even if you miss the flashing lights, you can glance at the display and still determine when your next appointment is.
 
 Required Components
 =================================
@@ -59,7 +77,7 @@ If all goes well, you should see the following files in the folder:
 - `setup.py`
 - `start_remind.sh`
 
-Before you can use the project's software, you have to setup an account with Google in order to be able to execute the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
+Before you can use the project's software, you have to setup an account with Google so the app can consume the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
 
 Download your Google Calendar API application's `client_secret.json` file in the project folder. Be sure to name the downloaded file using that file name. You'll need it to authorize the app to access your Google Calendar and that file name is hard coded into the Python app.
 
