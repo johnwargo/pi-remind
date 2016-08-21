@@ -49,7 +49,7 @@ To setup the hardware, complete the following steps:
 + Place the Pi in a case
 + Power it up!
 
-When the Pi is all ready to go, update the device's software using the following commands:
+When the Pi is all ready to go, open a terminal window and update the device's software using the following commands:
 
 	sudo apt-get update
 	sudo apt-get upgrade
@@ -58,7 +58,7 @@ The first command updates the local software repositories and the second command
 
     sudo apt-get install python-numpy
 
-Next, create a directory for the project's files. Open a terminal window and execute the following commands:
+Next, create a directory for the project's files, execute the following commands in the terminal window:
 
 	mkdir pi_remind
 	cd pi_remind
@@ -71,11 +71,10 @@ Finally, copy the project's Python source code to the new folder and extract the
 If all goes well, you should see the following files in the folder:
 
 - `LICENSE`
-- `pi_remind.desktop`
 - `readme.md` (this file)
 - `remind.py`
 - `setup.py`
-- `start_remind.sh`
+- `start-remind.sh`
 
 Before you can use the project's software, you have to setup an account with Google so the app can consume the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
 
@@ -98,19 +97,24 @@ Before the app can access the calendar, you'll need to authorize the app to use 
 
 Note: if you ever change Google calendars (from a work to a personal calendar or from one work calendar profile to another) you'll need to whack the existing access token created during the initial startup or the Pi Reminder app. Instructions for deleting this token are available on [johnwargo.com](http://www.johnwargo.com/index.php/microcontrollers-single-board-computers/pi-reminder-%E2%80%93-delete-google-calendar-access-authorization-token.html).
 
+Starting The Project's Application's Automatically
+--------------------------------------------------
 
-Additional Files
----------------------------------
-The project includes several files that are not directly related to the Pi Reminder capabilities: 
+There are a few steps you must complete to configure the Raspberry Pi so it executes the the remind app on startup. If you don't already have a terminal window open, open one then navigate to the folder where you extracted the project files. Next, you need to make the project's bash script files executable by executing the following command:
 
-- `pi_remind.desktop`
-- `setup.py`
-- `start_remind.sh`
+    chmod +x start-remind.sh
+    
+Next, you'll need to open the pi user's session autostart file using the following command:  
 
-The `setup.py` file is a python setup script. Pi Reminder is my first Python app, so I created that file as I figured how all of this worked. You don't 'need' it, using the instructions included here, you'll be able to get the app running.
+	sudo nano ~/.config/lxsession/LXDE-pi/autostart    
 
-The `pi_remind.desktop` and `start_remind.sh` files implement two possible ways to automate the startup of the `pi_remind` app.  I looked around for the 'right' way to autostart a Python app on the Pi and didn't find one. These two files were just me hacking away at finding a good way to get this working. One way to start the app is to put the `pi_remind.desktop` file in the Pi's `~/.config/autostart` folder. The file is a text file, so be sure to update it with the target folder where you installed the Pi Reminder files. `start_remind.sh` is a shell script you can execute on startup to start Pi Remind.
+Add the following lines to the end (bottom) of the file:
+
+	@lxterminal -e /home/pi/pi_remind/start-remind.sh
+
+To save your changes, press `ctrl-o` then press the Enter key. Next, press `ctrl-x` to exit the `nano` application.
   
+Reboot the Raspberry Pi. When it restarts, both python processes should execute in its own terminal window.  
 
 Known Issues
 =================================
@@ -118,6 +122,8 @@ Reminders are triggered for canceled events. If you have your Google Calendar co
 
 Revision History
 =================================
+2016-08-21: Removed .desktop file and replaced it with a shell script that actually works.
+
 2016-08-16: Changed activity lights to blue for checking and green for success. That seemed to be better as it now has red for failure and green for success. Made constants out of the colors used so the app's behavior can be changed more easily in one place. 
 
 2016-08-15: Updated the `show_activity_light` function, renamed the function to `set_activity_light` and updated it so it takes a `color` paremeter. Modified the flash_all_lights to take a `color` parameter. Renamed `flash_all_lights` and `flass_random_lights` to `flash_all` and `flash_random`.

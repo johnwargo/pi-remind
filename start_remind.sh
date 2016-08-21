@@ -1,5 +1,7 @@
-#!/bin/sh
-cd /home/pi/pi_remind
-sudo python remind.py &
-exit 0
-cd /
+#!/bin/bash
+
+# How To Autostart Apps In Rasbian LXDE Desktop
+# http://www.raspberrypi-spy.co.uk/2014/05/how-to-autostart-apps-in-rasbian-lxde-desktop/
+
+echo "Starting Pi Remind"
+/usr/bin/python /home/pi/pi_remind/remind.py
