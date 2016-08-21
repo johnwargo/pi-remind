@@ -4,4 +4,4 @@
 # http://www.raspberrypi-spy.co.uk/2014/05/how-to-autostart-apps-in-rasbian-lxde-desktop/
 
 echo "Starting Pi Remind"
-/usr/bin/python /home/pi/pi_remind/remind.py
+/usr/bin/sudo python /home/pi/pi_remind/remind.py
