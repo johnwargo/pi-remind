@@ -134,11 +134,11 @@ Reboot the Raspberry Pi. When it restarts, both python processes should execute 
 
 Known Issues
 =================================
-Reminders are triggered for canceled events. If you have your Google Calendar configured to show deleted events, pi_remind will flash its lights for those events as well. I've tried setting `showDeleted` to `false` in the call to get the calendar entry list from Google, but it does not seem to have an effect (in my testing anyway).
+Reminders are triggered for canceled events. If you have your Google Calendar configured to show deleted events, `pi_remind` will flash its lights for those events as well. I've tried setting `showDeleted` to `false` in the API call to get the calendar entry list from Google, but it does not seem to have an effect (in my testing anyway).
 
 Revision History
 =================================
-2016-08-21: Removed .desktop file and replaced it with a shell script that actually works.
+2016-08-21: Removed .desktop file and replaced it with a shell script that actually works. Made some major edits to the readme.md file.
 
 2016-08-16: Changed activity lights to blue for checking and green for success. That seemed to be better as it now has red for failure and green for success. Made constants out of the colors used so the app's behavior can be changed more easily in one place. 
 
