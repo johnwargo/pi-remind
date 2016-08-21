@@ -40,14 +40,29 @@ For this project, I used the following components:
 
 The only required component is the Unicorn HAT as the code in this project is hand crafted for that device. Otherwise, pick whatever Raspberry Pi device, case and power supply that works best for you.
 
+Google Calendar API Setup
+========================
+
+Before you can use the project's software, you have to setup an account with Google so the app can consume the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
+
+Download your Google Calendar API application's `client_secret.json` file in the project folder. Be sure to name the downloaded file using that file name. You'll need it to authorize the app to access your Google Calendar and that file name is hard coded into the Python app.
 
 Raspberry Pi Setup
 =================================
+
+Hardware
+--------
+
 To setup the hardware, complete the following steps:
 
-+ Mount the Pimoroni Unicorn HAT on the Raspberry Pi device
-+ Place the Pi in a case
-+ Power it up!
+1. Mount the Pimoroni Unicorn HAT on the Raspberry Pi device
+2. Place the Pi in a case
+3. Power it up!
+
+That's it, you're done. That was easy! 
+
+Software
+--------
 
 When the Pi is all ready to go, open a terminal window and update the device's software using the following commands:
 
@@ -76,16 +91,11 @@ If all goes well, you should see the following files in the folder:
 - `setup.py`
 - `start-remind.sh`
 
-Before you can use the project's software, you have to setup an account with Google so the app can consume the Google Calendar APIs used in this project. To setup your account, read the [Google Calendar API Python Quickstart](https://developers.google.com/google-apps/calendar/quickstart/python).
-
-Download your Google Calendar API application's `client_secret.json` file in the project folder. Be sure to name the downloaded file using that file name. You'll need it to authorize the app to access your Google Calendar and that file name is hard coded into the Python app.
-
-As part of that process, you'll install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
+Now, install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
 
     sudo pip install --upgrade google-api-python-client python-dateutil pytz
 
-Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat):
-basically opening a terminal window and executing the following command:
+Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat). Basically, open a terminal window and execute the following command:
 
     curl -sS get.pimoroni.com/unicornhat | bash
 
@@ -100,7 +110,11 @@ Note: if you ever change Google calendars (from a work to a personal calendar or
 Starting The Project's Application's Automatically
 --------------------------------------------------
 
-There are a few steps you must complete to configure the Raspberry Pi so it executes the the remind app on startup. If you don't already have a terminal window open, open one then navigate to the folder where you extracted the project files. Next, you need to make the project's bash script files executable by executing the following command:
+There are a few steps you must complete to configure the Raspberry Pi so it executes the the remind app on startup.
+
+***Note:** Don't forget to authorize the Google Calendar API to access your Google Calendar by running the manual startup process described in the previous session before enabling autostart.* 
+
+If you don't already have a terminal window open, open one then navigate to the folder where you extracted the project files. Make the project's bash script files executable by executing the following command:
 
     chmod +x start-remind.sh
     
@@ -114,7 +128,9 @@ Add the following lines to the end (bottom) of the file:
 
 To save your changes, press `ctrl-o` then press the Enter key. Next, press `ctrl-x` to exit the `nano` application.
   
-Reboot the Raspberry Pi. When it restarts, both python processes should execute in its own terminal window.  
+Reboot the Raspberry Pi. When it restarts, both python processes should execute in its own terminal window.
+
+
 
 Known Issues
 =================================
