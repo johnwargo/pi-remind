@@ -89,6 +89,7 @@ If all goes well, you should see the following files in the folder:
 - `readme.md` (this file)
 - `remind.py`
 - `setup.py`
+- `start-remind.desktop`
 - `start-remind.sh`
 
 Now, install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
