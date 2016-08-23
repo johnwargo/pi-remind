@@ -110,7 +110,7 @@ Note: if you ever change Google calendars (from a work to a personal calendar or
 Starting The Project's Application's Automatically
 --------------------------------------------------
 
-There are a few steps you must complete to configure the Raspberry Pi so it executes the the remind app on startup.
+There are a few steps you must complete to configure the Raspberry Pi so it executes the the remind app on startup. You can read more about this here: [Autostart Python App on Raspberry Pi in a Terminal Window](http://johnwargo.com/index.php/microcontrollers-single-board-computers/autostart-python-app-on-raspberry-pi-in-a-terminal-window.html).
 
 ***Note:** Don't forget to authorize the Google Calendar API to access your Google Calendar by running the manual startup process described in the previous session before enabling autostart.* 
 
