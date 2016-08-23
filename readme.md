@@ -128,9 +128,9 @@ Add the following lines to the end (bottom) of the file:
 
 To save your changes, press `ctrl-o` then press the Enter key. Next, press `ctrl-x` to exit the `nano` application.
   
-Reboot the Raspberry Pi. When it restarts, both python processes should execute in its own terminal window.
+Reboot the Raspberry Pi; when it restarts, the python remind process should execute in its own terminal window.
 
-
+Another option is to copy the `start-remind.desktop` file to `~/.config/autostart`. Reboot the Pi and you should see a terminal window running the Reminder app.
 
 Known Issues
 =================================
@@ -138,6 +138,8 @@ Reminders are triggered for canceled events. If you have your Google Calendar co
 
 Revision History
 =================================
+2016-08-23: Added an updated .desktop file (`start-remind.desktop`) back to the project. This one actually works. ;-) 
+
 2016-08-21: Removed .desktop file and replaced it with a shell script that actually works. Made some major edits to the readme.md file.
 
 2016-08-16: Changed activity lights to blue for checking and green for success. That seemed to be better as it now has red for failure and green for success. Made constants out of the colors used so the app's behavior can be changed more easily in one place. 
