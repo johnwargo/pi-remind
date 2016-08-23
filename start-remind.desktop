@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=pi_reminder
+Comment=Raspberry Pi Calendar Reminder App
+Exec=lxterminal -e "/home/pi/pi_remind/start-remind.sh"
+Icon=
+StartupNotify=true
+Terminal=true
+X-MultipleArgs=false
+Type=Application
+Categories=Utility;TerminalEmulator;
