@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=pi_reminder
+Name=Pi Remind
 Comment=Raspberry Pi Calendar Reminder App
 Exec=lxterminal -e "/home/pi/pi_remind/start-remind.sh"
 Icon=
