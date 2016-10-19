@@ -12,6 +12,8 @@
     Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
 ********************************************************************************************************************'''
+# todo: Add configurable option for ignoring tentative appointments
+
 from __future__ import print_function
 
 import colorsys
