@@ -73,15 +73,19 @@ The first command updates the local software repositories and the second command
 
     sudo apt-get install python-numpy
 
-Next, create a directory for the project's files, execute the following commands in the terminal window:
+Install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
 
-	mkdir pi_remind
+    sudo pip install --upgrade google-api-python-client python-dateutil pytz
+
+Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat). Basically, open a terminal window and execute the following command:
+
+    curl -sS get.pimoroni.com/unicornhat | bash
+
+Next, download the project's code; in the same terminal window, execute the following commands:
+
+	git clone https://github.com/johnwargo/pi_remind
 	cd pi_remind
-
-Finally, copy the project's Python source code to the new folder and extract the files using the following commands:
-
-	wget https://github.com/johnwargo/pi_remind/archive/master.zip
-	unzip -j master.zip
+	ls
 
 If all goes well, you should see the following files in the folder:
 
@@ -89,14 +93,6 @@ If all goes well, you should see the following files in the folder:
 - `readme.md` (this file)
 - `remind.py`
 - `start-remind.sh`
-
-Now, install the [Google Calendar API Python files](https://developers.google.com/api-client-library/python/start/installation) along with date handling libraries using the following command:
-
-    sudo pip install --upgrade google-api-python-client python-dateutil pytz
-
-Install the Unicorn HAT libraries following the instructions on the [Pimoroni web site](http://learn.pimoroni.com/tutorial/unicorn-hat/getting-started-with-unicorn-hat). Basically, open a terminal window and execute the following command:
-
-    curl -sS get.pimoroni.com/unicornhat | bash
 
 With everything in place, execute the reminder app using the following command:
 
