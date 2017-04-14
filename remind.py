@@ -93,7 +93,7 @@ def swirl(x, y, step):
     r *= 64.0
     r -= 20
 
-    return (r, r + (s * 130), r + (c * 130))
+    return r, r + (s * 130), r + (c * 130)
 
 
 def do_swirl(duration):
