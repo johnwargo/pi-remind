@@ -67,6 +67,13 @@ CHECKING_COLOR = BLUE
 SUCCESS_COLOR = GREEN
 FAILURE_COLOR = RED
 
+# JMW Added 20170414 to fix an issue when there's an error connecting to the
+# Google Calendar API. The app needs to track whether there's an existing
+# error through the process. If there is, then when checking again for entries
+# the app will leave the light red while checking. Setting it to green if
+# successful.
+has_error = False
+
 
 def swirl(x, y, step):
     # modified from: https://github.com/pimoroni/unicorn-hat/blob/master/python/examples/demo.py
@@ -127,6 +134,14 @@ def set_activity_light(color, increment):
     # set the pixel color
     lights.set_pixel(current_activity_light, 0, color[0], color[1], color[2])
     # show the pixel
+    lights.show()
+
+
+def set_all(color):
+    # light all of the LEDs in a RGB single color.
+    for y in range(8):
+        for x in range(8):
+            lights.set_pixel(x, y, color[0], color[1], color[2])
     lights.show()
 
 
@@ -205,14 +220,19 @@ def has_reminder(event):
 
 
 def get_next_event(search_limit):
+    global has_error
+
     # modified from https://developers.google.com/google-apps/calendar/quickstart/python
     # get all of the events on the calendar from now through 10 minutes from now
     print(datetime.datetime.now(), 'Getting next event')
     # this 'now' is in a different format (UTC)
     now = datetime.datetime.utcnow()
     then = now + datetime.timedelta(minutes=search_limit)
-    # turn on a sequential CHECKING_COLOR LED to show that you're requesting data from the Google Calendar API
-    set_activity_light(CHECKING_COLOR, True)
+    # if we don't have an error from the previous attempt, then change the LED color
+    # otherwise leave it alone (it should already be red, so it will stay that way).
+    if not has_error:
+        # turn on a sequential CHECKING_COLOR LED to show that you're requesting data from the Google Calendar API
+        set_activity_light(CHECKING_COLOR, True)
     try:
         # ask Google for the calendar entries
         events_result = service.events().list(
@@ -226,6 +246,8 @@ def get_next_event(search_limit):
         set_activity_light(SUCCESS_COLOR, False)
         # Get the event list
         event_list = events_result.get('items', [])
+        # initialize this here, setting it to true later if we encounter an error
+        has_error = False
         # did we get a return value?
         if not event_list:
             # no? Then no upcoming events at all, so nothing to do right now
@@ -266,6 +288,8 @@ def get_next_event(search_limit):
         # now set the current_activity_light to FAILURE_COLOR to indicate an error state
         # with the last reading
         set_activity_light(FAILURE_COLOR, False)
+        # we have an error, so make note of it
+        has_error = True
 
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
@@ -346,10 +370,16 @@ flash_random(5, 0.1)
 # blink all the LEDs GREEN to let the user know the hardware is working
 flash_all(1, 1, GREEN)
 
-# Initialize the Google Calendar API stuff
-credentials = get_credentials()
-http = credentials.authorize(httplib2.Http())
-service = discovery.build('calendar', 'v3', http=http)
+try:
+    # Initialize the Google Calendar API stuff
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    service = discovery.build('calendar', 'v3', http=http)
+except:
+    # make all the LEDs red
+    set_all(FAILURE_COLOR)
+    # then exit, nothing else we can do, right?
+    sys.exit(0)
 
 print('\nApplication initialized\n')
 
