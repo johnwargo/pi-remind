@@ -11,6 +11,9 @@
 
     Google Calendar example code: https://developers.google.com/google-apps/calendar/quickstart/python
     Unicorn HAT example code: https://github.com/pimoroni/unicorn-hat/tree/master/python/examples
+
+    Updated 2018-12-18 - Added automatic reboot if can't connect after 10 tries.
+
 ********************************************************************************************************************'''
 # todo: Add configurable option for ignoring tentative appointments
 
@@ -53,6 +56,11 @@ HASHES = '########################################'
 FIRST_THRESHOLD = 5  # minutes, WHITE lights before this
 # RED for anything less than (and including) the second threshold
 SECOND_THRESHOLD = 2  # minutes, YELLOW lights before this
+
+# Reboot Options - Added this to enable users to reboot the pi after a certain number of failed retries.
+REBOOT_COUNTER_ENABLED = True
+REBOOT_NUM_RETRIES = 10
+reboot_counter = 0  # counter variable, tracks retry events.
 
 # COLORS
 RED = (255, 0, 0)
@@ -221,6 +229,7 @@ def has_reminder(event):
 
 def get_next_event(search_limit):
     global has_error
+    global reboot_counter
 
     # modified from https://developers.google.com/google-apps/calendar/quickstart/python
     # get all of the events on the calendar from now through 10 minutes from now
@@ -248,6 +257,8 @@ def get_next_event(search_limit):
         event_list = events_result.get('items', [])
         # initialize this here, setting it to true later if we encounter an error
         has_error = False
+        # reset the reboot counter, since everything worked so far
+        reboot_counter = 0;
         # did we get a return value?
         if not event_list:
             # no? Then no upcoming events at all, so nothing to do right now
@@ -290,6 +301,18 @@ def get_next_event(search_limit):
         set_activity_light(FAILURE_COLOR, False)
         # we have an error, so make note of it
         has_error = True
+        # check to see if reboot is enabled
+        if REBOOT_COUNTER_ENABLED:
+            print('Incrementing the reboot counter')
+            # increment the counter
+            reboot_counter += 1
+            # did we exceed the reboot count?
+            if reboot_counter > REBOOT_NUM_RETRIES:
+                # Reboot the Pi
+                for i in range(1, 10):
+                    print('Rebooting in ', i, ' seconds')
+                    time.sleep(1)
+                os.system("sudo reboot")
 
     # if we got this far and haven't returned anything, then there's no appointments in the specified time
     # range, or we had an error, so...
@@ -344,9 +367,6 @@ def main():
         # wait a second then check again
         # You can always increase the sleep value below to check less often
         time.sleep(1)
-
-    # this should never happen since the above is an infinite loop
-    print('Leaving main()')
 
 
 # now tell the user what we're doing...

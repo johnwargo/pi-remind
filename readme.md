@@ -133,6 +133,8 @@ Reminders are triggered for canceled events. If you have your Google Calendar co
 
 Revision History
 =================================
+2018-12-18: Added automatic reboot configuration options when the `remind` app can't connect to the network. I noticed that when I lose power, the Pi can't reconnect to the network. So I decided to add an option to reboot the device after a certain number of minutes.
+
 2017-04-17: While my home internet connection was out one day, I noticed that the application always sets the indicator LED to blue while it's checking for new calendar events. As a user, this is confusing to me as it makes me believe that things are OK when I see that the LED is blue. So, to fix this, I added a `has_error` variable that the application checks to see if the previous calendar check resulted in an error, in this case it leaves the LED red. Also added a try/except block around the initialization code that checks the user's credentials with Google. If the network's not available, the existing code fails catastrophically, so I thought it would be nice to indicate the error with all red LEDs then exit the app.
 
 2016-08-23: Added an updated .desktop file (`start-remind.desktop`) back to the project. This one actually works. ;-) 
