@@ -83,8 +83,8 @@ Install the Unicorn HAT libraries following the instructions on the [Pimoroni we
 
 Next, download the project's code; in the same terminal window, execute the following commands:
 
-	git clone https://github.com/johnwargo/pi_remind
-	cd pi_remind
+	git clone https://github.com/johnwargo/pi-remind
+	cd pi-remind
 	ls
 
 If all goes well, you should see the following files in the folder:
@@ -119,7 +119,7 @@ Next, you'll need to open the pi user's session autostart file using the followi
 
 Add the following lines to the end (bottom) of the file:
 
-	@lxterminal -e /home/pi/pi_remind/start-remind.sh
+	@lxterminal -e /home/pi/pi-remind/start-remind.sh
 
 To save your changes, press `ctrl-o` then press the Enter key. Next, press `ctrl-x` to exit the `nano` application.
   
@@ -129,7 +129,7 @@ Another option is to copy the `start-remind.desktop` file to `~/.config/autostar
 
 Known Issues
 =================================
-Reminders are triggered for canceled events. If you have your Google Calendar configured to show deleted events, `pi_remind` will flash its lights for those events as well. I've tried setting `showDeleted` to `false` in the API call to get the calendar entry list from Google, but it does not seem to have an effect (in my testing anyway).
+Reminders are triggered for canceled events. If you have your Google Calendar configured to show deleted events, `pi-remind` will flash its lights for those events as well. I've tried setting `showDeleted` to `false` in the API call to get the calendar entry list from Google, but it does not seem to have an effect (in my testing anyway).
 
 Revision History
 =================================
